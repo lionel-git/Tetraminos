@@ -59,11 +59,25 @@ namespace TetraMinos2
             board.TrySolve(pieces.Values.ToList());
         }
 
+        static void Test2()
+        {
+            Board board;
+            var pieces = TestLoader.LoadTest("Test1.txt", out board);
+
+            Console.WriteLine(board);
+            foreach (var piece in pieces)
+                Console.WriteLine(piece);
+
+            board.TrySolve(pieces.Values.ToList());
+        }
+
+
+
         static void Main(string[] args)
         {
             try
             {
-                Test1();
+                Test2();
             }
             catch (Exception e)
             {

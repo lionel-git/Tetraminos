@@ -83,6 +83,27 @@ namespace TetraMinos2
         public void TrySolve(List<Piece> pieces)
         {
             Console.WriteLine("Starting solve...");
+
+            // Check some conditions
+            int area = 0;
+            int maxRows = 0;
+            int maxColumns = 0;
+            foreach (var piece in pieces)
+            {
+                area += piece.Area;
+                maxRows = Math.Max(maxRows, piece.Rows);
+                maxColumns = Math.Max(maxColumns, piece.Columns);
+            }
+
+            if (area != Rows * Columns)
+                throw new Exception($"Area mismatch: pieces area = {area} != {Rows}*{Columns}");
+
+            if (maxRows>Rows)
+                throw new Exception($"A piece is too tall: {maxRows} > {Rows}");
+
+            if (maxColumns > Columns)
+                throw new Exception($"A piece is too large: {maxColumns} > {Columns}");
+
             Console.WriteLine("End solve.");
         }
 

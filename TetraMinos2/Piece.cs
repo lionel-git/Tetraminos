@@ -8,10 +8,14 @@ namespace TetraMinos2
 {
     public class Piece
     {
+        // Inputs
         private int _id;
         private int _rows;
         private int _columns;
         private int[,] _datas;
+
+        // Computed
+        private List<Point> _points;
 
         public int Rows => _rows;
         public int Columns => _columns;
@@ -19,6 +23,8 @@ namespace TetraMinos2
         public int Id => _id;
 
         public char Name => (char)_id;
+
+        public int Area => _points.Count;
 
         public int this[int i, int j]
         {
@@ -50,6 +56,7 @@ namespace TetraMinos2
                             _datas[i, j] = Constants.Empty;
             }
             CheckConsistency();
+            ComputeDatas();
         }
 
         private void CheckConsistency()
@@ -72,6 +79,22 @@ namespace TetraMinos2
 
         }
 
+        private void ComputeDatas()
+        {
+            _points = new List<Point>();
+            for (int i = 0; i < _rows; i++)
+                for (int j = 0; j < _columns; j++)
+                    if (this[i, j] == _id)
+                    {
+                        var point = new Point();
+                        point.Position = new Position(i, j);
+                        
+                        
+                            
+                        _points.Add(point);
+                    }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -80,7 +103,8 @@ namespace TetraMinos2
             {
                 for (int j = 0; j < Columns; j++)
                     sb.Append(" ").Append(Constants.ConvertCell(this[i, j]));
-                sb.AppendLine();
+                if (i < Rows - 1)
+                    sb.AppendLine();
             }
             return sb.ToString();
         }
