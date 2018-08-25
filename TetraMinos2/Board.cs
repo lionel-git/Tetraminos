@@ -56,7 +56,7 @@ namespace TetraMinos2
                     if (piece[i, j])
                     {
                         if (check && this[position.Row + i, position.Column + j] != oldValue)
-                            throw new Exception($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
+                            throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
                         this[position.Row + i, position.Column + j] = newValue;
                     }
         }
@@ -96,13 +96,13 @@ namespace TetraMinos2
             }
 
             if (area != Rows * Columns)
-                throw new Exception($"Area mismatch: pieces area = {area} != {Rows}*{Columns}");
+                throw new TetraMinoException($"Area mismatch: pieces area = {area} != {Rows}*{Columns}");
 
             if (maxRows>Rows)
-                throw new Exception($"A piece is too tall: {maxRows} > {Rows}");
+                throw new TetraMinoException($"A piece is too tall: {maxRows} > {Rows}");
 
             if (maxColumns > Columns)
-                throw new Exception($"A piece is too large: {maxColumns} > {Columns}");
+                throw new TetraMinoException($"A piece is too large: {maxColumns} > {Columns}");
 
             Console.WriteLine("End solve.");
         }

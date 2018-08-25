@@ -68,7 +68,7 @@ namespace TetraMinos2
             foreach (var piece in pieces)
                 Console.WriteLine(piece.Value.ToStringDebug());
 
-           // board.TrySolve(pieces.Values.ToList());
+            //board.TrySolve(pieces.Values.ToList());
         }
 
 
@@ -78,6 +78,10 @@ namespace TetraMinos2
             try
             {
                 Test2();
+            }
+            catch (TetraMinoException e)
+            {
+                Console.WriteLine(e);
             }
             catch (Exception e)
             {

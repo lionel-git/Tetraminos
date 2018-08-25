@@ -58,7 +58,7 @@ namespace TetraMinos2
             if (!string.IsNullOrEmpty(datas))
             {
                 if (datas.Length != Rows * Columns)
-                    throw new Exception($"Invalid init string '{datas}' ({Rows}*{Columns}");
+                    throw new TetraMinoException($"Invalid init string '{datas}' ({Rows}*{Columns}");
                 int k = 0;
                 for (int i = 0; i < _rows; i++)
                     for (int j = 0; j < _columns; j++)
@@ -86,7 +86,7 @@ namespace TetraMinos2
                 bottom = bottom || this[Rows - 1, j];
             }
             if (!left || !right || !top || !bottom)
-                throw new Exception($"Piece '{Name}' is invalid");
+                throw new TetraMinoException($"Piece '{Name}' is invalid");
             // Check if connex?
 
         }
