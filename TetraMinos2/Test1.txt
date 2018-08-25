@@ -4,3 +4,4 @@ Piece,A,1,3,
 Piece,B,2,2,
 Piece,C,3,2,X.XX.X
 Piece,D,3,2,X.XXX.
+Piece,E,3,3,

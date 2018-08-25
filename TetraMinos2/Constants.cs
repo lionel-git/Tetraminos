@@ -11,17 +11,25 @@ namespace TetraMinos2
         public const int Empty = -1;
         public const int Border = -2;
 
+        const string On = "X";
+        const string Off = ".";
+
         public static string ConvertCell(int v)
         {
             switch (v)
             {
                 case Border:
-                    return "X";
+                    return On;
                 case Empty:
-                    return ".";
+                    return Off;
                 default:
                     return char.ConvertFromUtf32(v);
             }
+        }
+
+        public static string ConvertCell(bool b)
+        {
+            return (b ? On : Off);
         }
     }
 }

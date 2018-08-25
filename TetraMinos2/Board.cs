@@ -53,7 +53,7 @@ namespace TetraMinos2
 
             for (int i = 0; i < piece.Rows; i++)
                 for (int j = 0; j < piece.Columns; j++)
-                    if (piece[i, j] != Constants.Empty)
+                    if (piece[i, j])
                     {
                         if (check && this[position.Row + i, position.Column + j] != oldValue)
                             throw new Exception($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
@@ -65,7 +65,7 @@ namespace TetraMinos2
         {
             for (int k = 0; k < piece.Rows; k++)
                 for (int l = 0; l < piece.Columns; l++)
-                    if (this[i + k, j + l] != Constants.Empty && piece[k, l] != Constants.Empty)
+                    if (this[i + k, j + l] != Constants.Empty && piece[k, l])
                         return true;
             return false;
         }

@@ -66,9 +66,9 @@ namespace TetraMinos2
 
             Console.WriteLine(board);
             foreach (var piece in pieces)
-                Console.WriteLine(piece);
+                Console.WriteLine(piece.Value.ToStringDebug());
 
-            board.TrySolve(pieces.Values.ToList());
+           // board.TrySolve(pieces.Values.ToList());
         }
 
 

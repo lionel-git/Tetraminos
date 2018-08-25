@@ -12,11 +12,10 @@ namespace TetraMinos2
         private int _id;
         private int _rows;
         private int _columns;
-        private int[,] _datas;
+        private bool[,] _datas;
 
         // Computed
-        private List<Point> _points;
-
+        private int _area;
         public int Rows => _rows;
         public int Columns => _columns;
 
@@ -24,9 +23,14 @@ namespace TetraMinos2
 
         public char Name => (char)_id;
 
-        public int Area => _points.Count;
+        public int Area => _area;
 
-        public int this[int i, int j]
+        // Points sorted by N4
+        private List<Point>[] _pointsN4;
+        // Points sorted by N8
+        private List<Point>[] _pointsN8;
+
+        public bool this[int i, int j]
         {
             get
             {
@@ -34,15 +38,23 @@ namespace TetraMinos2
             }
         }
 
+        public int CheckPos(int i, int j)
+        {
+            if (i >= 0 && i < Rows && j >= 0 && j < Columns && _datas[i, j])
+                return 1;
+            else
+                return 0;
+        }
+
         public Piece(char id, int rows, int columns, string datas = null)
         {
             _id = id;
             _rows = rows;
             _columns = columns;
-            _datas = new int[_rows, _columns];
+            _datas = new bool[_rows, _columns];
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
-                    _datas[i, j] = _id;
+                    _datas[i, j] = true;
             if (!string.IsNullOrEmpty(datas))
             {
                 if (datas.Length != Rows * Columns)
@@ -51,9 +63,9 @@ namespace TetraMinos2
                 for (int i = 0; i < _rows; i++)
                     for (int j = 0; j < _columns; j++)
                         if (datas[k++] == 'X')
-                            _datas[i, j] = _id;
+                            _datas[i, j] = true;
                         else
-                            _datas[i, j] = Constants.Empty;
+                            _datas[i, j] = false;
             }
             CheckConsistency();
             ComputeDatas();
@@ -65,13 +77,13 @@ namespace TetraMinos2
             bool left = false, right = false, top = false, bottom = false;
             for (int i = 0; i < _rows; i++)
             {
-                left = left || this[i, 0] == _id;
-                right = right || this[i, Columns - 1] == _id;
+                left = left || this[i, 0];
+                right = right || this[i, Columns - 1];
             }
             for (int j = 0; j < _columns; j++)
             {
-                top = top || this[0, j] == _id;
-                bottom = bottom || this[Rows - 1, j] == _id;
+                top = top || this[0, j];
+                bottom = bottom || this[Rows - 1, j];
             }
             if (!left || !right || !top || !bottom)
                 throw new Exception($"Piece '{Name}' is invalid");
@@ -79,19 +91,31 @@ namespace TetraMinos2
 
         }
 
+        private List<Point>[] InitAList(int n)
+        {
+            var aList = new List<Point>[n];
+            for (int i = 0; i < aList.Length; i++)
+                aList[i] = new List<Point>();
+            return aList;
+        }
+
         private void ComputeDatas()
         {
-            _points = new List<Point>();
+            _pointsN4 = InitAList(Point.N4Size);
+            _pointsN8 = InitAList(Point.N8Size);
+            _area = 0;
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
-                    if (this[i, j] == _id)
+                    if (this[i, j])
                     {
                         var point = new Point();
                         point.Position = new Position(i, j);
-                        
-                        
-                            
-                        _points.Add(point);
+                        point.Neighboor4 = CheckPos(i, j - 1) + CheckPos(i, j + 1) + CheckPos(i - 1, j) + CheckPos(i + 1, j);
+                        point.Neighboor8 = point.Neighboor4 
+                            + CheckPos(i - 1, j - 1) + CheckPos(i + 1, j + 1) + CheckPos(i + 1, j - 1) + CheckPos(i - 1, j + 1);
+                        _pointsN4[point.Neighboor4].Add(point);
+                        _pointsN8[point.Neighboor8].Add(point);
+                        _area++;
                     }
         }
 
@@ -108,6 +132,22 @@ namespace TetraMinos2
             }
             return sb.ToString();
         }
+
+        public string ToStringDebug()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(ToString());
+            sb.AppendLine($"area:  {Area}");
+            for (int i = 0; i < _pointsN4.Length; i++)
+            {
+                sb.AppendLine($"With neighboor4 = {i}");
+                foreach (var point in _pointsN4[i])
+                    sb.AppendLine(point.ToString());
+                sb.AppendLine("====");
+            }
+            return sb.ToString();
+        }
+
 
     }
 }
