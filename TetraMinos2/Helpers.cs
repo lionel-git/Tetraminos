@@ -15,5 +15,26 @@ namespace TetraMinos2
                 sb.Append(item).Append(" ");
             return sb.ToString();
         }
+
+        public static T[,] InitArray<T>(int rows, int columns, T value = default(T))
+        {
+            var datas = new T[rows, columns];
+            for (int i = 0; i < datas.GetLength(0); i++)
+                for (int j = 0; j < datas.GetLength(1); j++)
+                    datas[i, j] = value;
+            return datas;
+        }
+
+        public static string ToString2<T>(this T[,] datas)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < datas.GetLength(0); i++)
+            {
+                for (int j = 0; j < datas.GetLength(1); j++)
+                    sb.Append(" ").Append(datas[i, j]);
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
     }
 }

@@ -15,6 +15,9 @@ namespace TetraMinos2
 
         private int[,] _datas;
 
+        private int[,] _n4;
+        private int[,] _n8;
+
         public int Rows => _rows;
         public int Columns => _columns;
 
@@ -35,29 +38,46 @@ namespace TetraMinos2
             _rows = rows;
             _columns = columns;
 
-            // Rectangle with on length "border" on each side
-            _datas = new int[3 * _rows, 3 * _columns];
-            for (int i = 0; i < _datas.GetLength(0); i++)
-                for (int j = 0; j < _datas.GetLength(1); j++)
-                    _datas[i, j] = Constants.Border;
-
+            _datas = Helpers.InitArray(3 * rows, 3 * columns, Constants.Border);
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
                     this[i, j] = Constants.Empty;
+
+            _n4 = Helpers.InitArray<int>(_rows + 2, _columns + 2);
+            _n8 = Helpers.InitArray<int>(_rows + 2, _columns + 2);
+            // A updater avec bordure!
+
+        }
+
+        private void UpdateNeighBoors(int row, int column, int increment)
+        {
+            _n4[row - 1, column] += increment;
+            _n4[row + 1, column] += increment;
+            _n4[row, column - 1] += increment;
+            _n4[row, column + 1] += increment;
+
+            _n8[row - 1, column - 1] += increment;
+            _n8[row + 1, column + 1] += increment;
+            _n8[row + 1, column - 1] += increment;
+            _n8[row - 1, column + 1] += increment;
         }
 
         public void UpdatePiece(Piece piece, Position position, Operation operation, bool check)
         {
             int newValue = (operation == Operation.Put ? piece.Id : Constants.Empty);
             int oldValue = (operation == Operation.Put ? Constants.Empty : piece.Id);
+            int incNeighboor = (operation == Operation.Put ? +1 : -1);
 
             for (int i = 0; i < piece.Rows; i++)
                 for (int j = 0; j < piece.Columns; j++)
                     if (piece[i, j])
                     {
-                        if (check && this[position.Row + i, position.Column + j] != oldValue)
+                        int row = position.Row + i;
+                        int column = position.Column + j;
+                        if (check && this[row, column] != oldValue)
                             throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
-                        this[position.Row + i, position.Column + j] = newValue;
+                        this[row, column] = newValue;
+                        UpdateNeighBoors(1+row, 1+column, incNeighboor);
                     }
         }
 
@@ -130,6 +150,8 @@ namespace TetraMinos2
                     sb.Append(" ").Append(Constants.ConvertCell(_datas[i, j]));
                 sb.AppendLine();
             }
+            sb.Append($"n4:\n{_n4.ToString2()}");
+            sb.Append($"n8:\n{_n8.ToString2()}");
             return sb.ToString();
         }
     }
