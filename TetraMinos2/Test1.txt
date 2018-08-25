@@ -1,0 +1,5 @@
+﻿#Test Config
+Board,5,3
+Piece,A,1,3,
+Piece,B,2,2,
+Piece,C,3,2,X.XX.X
