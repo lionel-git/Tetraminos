@@ -76,7 +76,7 @@ namespace TetraMinos2
             _n4D[1 + row - 1, 1 + column + 1] += increment;
         }
 
-        public void UpdatePiece(Piece piece, Position position, Operation operation, bool check)
+        public void UpdateBoard(Piece piece, Position position, Operation operation, bool check)
         {
             int newValue = (operation == Operation.Put ? piece.Id : Constants.Empty);
             int oldValue = (operation == Operation.Put ? Constants.Empty : piece.Id);
@@ -115,14 +115,24 @@ namespace TetraMinos2
             return positions;
         }
 
-
         // Find free position on board with high n4C/n4D
         private Position SearchMostDifficult()
         {
-
-
-
-            return new Position(0, 0);
+            var position = new Position(int.MinValue, int.MinValue);
+            int maxDifficulty = -100;
+            for (int i = 0; i < Rows; i++)
+                for (int j = 0; j < Columns; j++)
+                    if (this[i, j] == Constants.Empty)
+                    {
+                        int difficulty = 2 * _n4C[1 + i, 1 + j] + _n4D[1 + i, 1 + j];
+                        if (difficulty > maxDifficulty)
+                        {
+                            position.Row = i;
+                            position.Column = j;
+                            maxDifficulty = difficulty;
+                        }
+                    }
+            return position;
         }
 
 
@@ -146,7 +156,7 @@ namespace TetraMinos2
             else
             {
                 var position = SearchMostDifficult();
-
+                Logger.Debug($"Position = {position}");
                 // Iterer sur les pieces + points
                 // attention on ne peut pas iterer sur collection modifiee
 
@@ -166,12 +176,12 @@ namespace TetraMinos2
                     if (!IsCollision(row, column, piece.Value))
                     {
                         pieces.Remove(piece.Key);
-                        UpdatePiece(piece.Value, new Position(row, column), Operation.Put, true);
+                        UpdateBoard(piece.Value, new Position(row, column), Operation.Put, true);
                         if (Solve(pieces))
                             return true;
                         else
                         {
-                            UpdatePiece(piece.Value, new Position(row, column), Operation.Remove, true);
+                            UpdateBoard(piece.Value, new Position(row, column), Operation.Remove, true);
                             pieces.Add(piece.Key, piece.Value);
                         }
                     }
@@ -222,16 +232,21 @@ namespace TetraMinos2
             return sb.ToString();
         }
 
-        public string ToStringDebug()
+        public string ToStringDebug(bool completeBoard=false)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Board Debug ({_datas.GetLength(0)},{_datas.GetLength(1)}):");
-            for (int i = 0; i < _datas.GetLength(0); i++)
+            if (completeBoard)
             {
-                for (int j = 0; j < _datas.GetLength(1); j++)
-                    sb.Append(" ").Append(Constants.ConvertCell(_datas[i, j]));
-                sb.AppendLine();
+                sb.AppendLine($"Board Debug ({_datas.GetLength(0)},{_datas.GetLength(1)}):");
+                for (int i = 0; i < _datas.GetLength(0); i++)
+                {
+                    for (int j = 0; j < _datas.GetLength(1); j++)
+                        sb.Append(" ").Append(Constants.ConvertCell(_datas[i, j]));
+                    sb.AppendLine();
+                }
             }
+            else
+                sb.Append(ToString());
             sb.Append($"n4C:\n{_n4C.ToString2(1,1)}");
             sb.Append($"n4D:\n{_n4D.ToString2(1,1)}");
             return sb.ToString();
