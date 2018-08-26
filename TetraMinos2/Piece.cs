@@ -90,10 +90,10 @@ namespace TetraMinos2
 
         private List<Point>[] InitAList(int n)
         {
-            var aList = new List<Point>[n];
-            for (int i = 0; i < aList.Length; i++)
-                aList[i] = new List<Point>();
-            return aList;
+            var arrayList = new List<Point>[n];
+            for (int i = 0; i < arrayList.Length; i++)
+                arrayList[i] = new List<Point>();
+            return arrayList;
         }
 
         private void ComputeDatas()

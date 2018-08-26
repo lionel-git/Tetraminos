@@ -9,8 +9,8 @@ namespace TetraMinos2
     // Contains some informations about a point in a piece
     public class Point
     {
-        public const int N4Size = 4+1; // 0 to 4
-        public const int N8Size = 8+1; // 0 to 8
+        public const int N4Size = 4 + 1; // 0 to 4
+        public const int N8Size = 8 + 1; // 0 to 8
 
         // Position of point inside piece (from top left = 0,0)
         public Position Position { get; set; }

@@ -88,7 +88,7 @@ namespace TetraMinos2
                         if (check && this[row, column] != oldValue)
                             throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
                         this[row, column] = newValue;
-                        UpdateNeighBoors(1+row, 1+column, incNeighboor);
+                        UpdateNeighBoors(1 + row, 1 + column, incNeighboor);
                     }
         }
 
@@ -129,7 +129,7 @@ namespace TetraMinos2
             if (area != Rows * Columns)
                 throw new TetraMinoException($"Area mismatch: pieces area = {area} != {Rows}*{Columns}");
 
-            if (maxRows>Rows)
+            if (maxRows > Rows)
                 throw new TetraMinoException($"A piece is too tall: {maxRows} > {Rows}");
 
             if (maxColumns > Columns)
