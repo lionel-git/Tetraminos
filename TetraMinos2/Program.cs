@@ -56,7 +56,7 @@ namespace TetraMinos2
             board.UpdatePiece(pieces['C'], positions[0], Operation.Put, true);
             Console.WriteLine(board);
 
-            board.TrySolve(pieces.Values.ToList());
+            board.TrySolve(pieces);
         }
 
         static void Test2()

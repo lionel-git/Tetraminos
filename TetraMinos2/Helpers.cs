@@ -25,12 +25,12 @@ namespace TetraMinos2
             return datas;
         }
 
-        public static string ToString2<T>(this T[,] datas)
+        public static string ToString2<T>(this T[,] datas, int rowBorder = 0, int columnBorder = 0)
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < datas.GetLength(0); i++)
+            for (int i = rowBorder; i < datas.GetLength(0) - rowBorder; i++)
             {
-                for (int j = 0; j < datas.GetLength(1); j++)
+                for (int j = columnBorder; j < datas.GetLength(1) - columnBorder; j++)
                     sb.Append(" ").Append(datas[i, j]);
                 sb.AppendLine();
             }

@@ -15,8 +15,10 @@ namespace TetraMinos2
 
         private int[,] _datas;
 
-        private int[,] _n4;
-        private int[,] _n8;
+        // Neighboors up, down, left, right
+        private int[,] _n4C;
+        // Neighboors diags
+        private int[,] _n4D;
 
         public int Rows => _rows;
         public int Columns => _columns;
@@ -33,6 +35,11 @@ namespace TetraMinos2
             }
         }
 
+        public int Check(int i, int j)
+        {
+            return (this[i, j] == Constants.Empty ? 0 : 1);
+        }
+
         public Board(int rows, int columns)
         {
             _rows = rows;
@@ -43,23 +50,27 @@ namespace TetraMinos2
                 for (int j = 0; j < _columns; j++)
                     this[i, j] = Constants.Empty;
 
-            _n4 = Helpers.InitArray<int>(_rows + 2, _columns + 2);
-            _n8 = Helpers.InitArray<int>(_rows + 2, _columns + 2);
-            // A updater avec bordure!
-
+            _n4C = Helpers.InitArray<int>(_rows + 2, _columns + 2);
+            _n4D = Helpers.InitArray<int>(_rows + 2, _columns + 2);
+            for (int i = 0; i < _rows; i++)
+                for (int j = 0; j < _columns; j++)
+                {
+                    _n4C[1 + i, 1 + j] = Check(i + 1, j) + Check(i - 1, j) + Check(i, j + 1) + Check(i, j - 1);
+                    _n4D[1 + i, 1 + j] = Check(i + 1, j + 1) + Check(i - 1, j - 1) + Check(i - 1, j + 1) + Check(i + 1, j - 1);
+                }
         }
 
         private void UpdateNeighBoors(int row, int column, int increment)
         {
-            _n4[row - 1, column] += increment;
-            _n4[row + 1, column] += increment;
-            _n4[row, column - 1] += increment;
-            _n4[row, column + 1] += increment;
+            _n4C[row - 1, column] += increment;
+            _n4C[row + 1, column] += increment;
+            _n4C[row, column - 1] += increment;
+            _n4C[row, column + 1] += increment;
 
-            _n8[row - 1, column - 1] += increment;
-            _n8[row + 1, column + 1] += increment;
-            _n8[row + 1, column - 1] += increment;
-            _n8[row - 1, column + 1] += increment;
+            _n4D[row - 1, column - 1] += increment;
+            _n4D[row + 1, column + 1] += increment;
+            _n4D[row + 1, column - 1] += increment;
+            _n4D[row - 1, column + 1] += increment;
         }
 
         public void UpdatePiece(Piece piece, Position position, Operation operation, bool check)
@@ -100,7 +111,7 @@ namespace TetraMinos2
             return positions;
         }
 
-        public void TrySolve(List<Piece> pieces)
+        public void TrySolve(Dictionary<char, Piece> pieces)
         {
             Console.WriteLine("Starting solve...");
 
@@ -108,7 +119,7 @@ namespace TetraMinos2
             int area = 0;
             int maxRows = 0;
             int maxColumns = 0;
-            foreach (var piece in pieces)
+            foreach (var piece in pieces.Values)
             {
                 area += piece.Area;
                 maxRows = Math.Max(maxRows, piece.Rows);
@@ -150,8 +161,8 @@ namespace TetraMinos2
                     sb.Append(" ").Append(Constants.ConvertCell(_datas[i, j]));
                 sb.AppendLine();
             }
-            sb.Append($"n4:\n{_n4.ToString2()}");
-            sb.Append($"n8:\n{_n8.ToString2()}");
+            sb.Append($"n4C:\n{_n4C.ToString2(1,1)}");
+            sb.Append($"n4D:\n{_n4D.ToString2(1,1)}");
             return sb.ToString();
         }
     }
