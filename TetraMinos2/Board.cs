@@ -65,15 +65,15 @@ namespace TetraMinos2
 
         private void UpdateNeighBoors(int row, int column, int increment)
         {
-            _n4C[row - 1, column] += increment;
-            _n4C[row + 1, column] += increment;
-            _n4C[row, column - 1] += increment;
-            _n4C[row, column + 1] += increment;
+            _n4C[1 + row - 1, 1 + column + 0] += increment;
+            _n4C[1 + row + 1, 1 + column + 0] += increment;
+            _n4C[1 + row + 0, 1 + column - 1] += increment;
+            _n4C[1 + row + 0, 1 + column + 1] += increment;
 
-            _n4D[row - 1, column - 1] += increment;
-            _n4D[row + 1, column + 1] += increment;
-            _n4D[row + 1, column - 1] += increment;
-            _n4D[row - 1, column + 1] += increment;
+            _n4D[1 + row - 1, 1 + column - 1] += increment;
+            _n4D[1 + row + 1, 1 + column + 1] += increment;
+            _n4D[1 + row + 1, 1 + column - 1] += increment;
+            _n4D[1 + row - 1, 1 + column + 1] += increment;
         }
 
         public void UpdatePiece(Piece piece, Position position, Operation operation, bool check)
@@ -91,19 +91,20 @@ namespace TetraMinos2
                         if (check && this[row, column] != oldValue)
                             throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
                         this[row, column] = newValue;
-                        UpdateNeighBoors(1 + row, 1 + column, incNeighboor);
+                        UpdateNeighBoors(row, column, incNeighboor);
                     }
         }
 
-        private bool IsCollision(int i, int j, Piece piece)
+        private bool IsCollision(int row, int column, Piece piece)
         {
             for (int k = 0; k < piece.Rows; k++)
                 for (int l = 0; l < piece.Columns; l++)
-                    if (this[i + k, j + l] != Constants.Empty && piece[k, l])
+                    if (piece[k, l] && this[row + k, column + l] != Constants.Empty)
                         return true;
             return false;
         }
 
+        [Obsolete]
         public List<Position> SearchPositions(Piece piece)
         {
             var positions = new List<Position>();
@@ -112,6 +113,56 @@ namespace TetraMinos2
                     if (!IsCollision(i, j, piece))
                         positions.Add(new Position(i, j));
             return positions;
+        }
+
+        // Recursive search, Algo:
+        // Sort free positions by decreasing complexity (n4C + n4D high)
+        // for a position, sort pieces by complexity (presorted, sorted dictionnary?)
+        // for a piece, find a possible point : point.neighboor + position.neighboor <= MaxNeighboors
+        // Check Collision
+        // if ok => Place piece + recurse
+        // Recurse succeed => return true
+        // Recurse fails => next point/piece
+        public bool Solve(Dictionary<char, Piece> pieces)
+        {
+            Logger.Debug($"{pieces.Count} pieces, solve for {ToStringDebug()}");
+            if (pieces.Count == 0)
+            {
+                Logger.Info("Solution found !!");
+                Logger.Info(ToString());
+                return true;
+            }
+            else
+            {
+                // Search most difficult free position on the board
+                int rowFree = 0;
+                int columnFree = 0;
+
+
+
+
+                // Iterer sur les pieces + points
+                var piece = pieces.First();
+                int rowPoint = 0;
+                int columnPoint = 0;
+
+                int row = rowFree + rowPoint;
+                int column = columnFree + columnPoint;
+                if (!IsCollision(row, column, piece.Value))
+                {
+                    pieces.Remove(piece.Key);
+                    UpdatePiece(piece.Value, new Position(row, column), Operation.Put, true);
+                    if (Solve(pieces))
+                        return true;
+                    else
+                    {
+                        UpdatePiece(piece.Value, new Position(row, column), Operation.Remove, true);
+                        pieces.Add(piece.Key, piece.Value);
+                    }
+                }
+               
+                return false;
+            }
         }
 
         public void TrySolve(Dictionary<char, Piece> pieces)
@@ -137,6 +188,8 @@ namespace TetraMinos2
 
             if (maxColumns > Columns)
                 throw new TetraMinoException($"A piece is too large: {maxColumns} > {Columns}");
+
+            Solve(pieces);
 
             Logger.Info("End solve.");
         }

@@ -71,10 +71,13 @@ namespace TetraMinos2
             foreach (var piece in pieces)
                 Logger.Info(piece.Value.ToStringDebug());
 
-            board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Put, true);
+            //board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Put, true);
 
             Logger.Info(board.ToStringDebug());
             board.TrySolve(pieces);
+
+           
+        
         }
 
         static void Main(string[] args)
