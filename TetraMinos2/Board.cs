@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace TetraMinos2
 
     public class Board
     {
+        static readonly ILog Logger = LogManager.GetLogger(nameof(Board));
+
         private int _rows;
         private int _columns;
 
@@ -113,7 +116,7 @@ namespace TetraMinos2
 
         public void TrySolve(Dictionary<char, Piece> pieces)
         {
-            Console.WriteLine("Starting solve...");
+            Logger.Info("Starting solve...");
 
             // Check some conditions
             int area = 0;
@@ -135,7 +138,7 @@ namespace TetraMinos2
             if (maxColumns > Columns)
                 throw new TetraMinoException($"A piece is too large: {maxColumns} > {Columns}");
 
-            Console.WriteLine("End solve.");
+            Logger.Info("End solve.");
         }
 
         public override string ToString()

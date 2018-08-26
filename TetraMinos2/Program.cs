@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,33 +9,35 @@ namespace TetraMinos2
 {
     class Program
     {
+        static readonly ILog Logger = LogManager.GetLogger("TetraMinos");
+
         static void Test0()
         {
             var board = new Board(5, 3);
-            Console.WriteLine(board);
-            Console.WriteLine(board.ToStringDebug());
+            Logger.Info(board);
+            Logger.Info(board.ToStringDebug());
 
             var pA = new Piece('A', 1, 3);
-            Console.WriteLine(pA);
+            Logger.Info(pA);
 
             var pB = new Piece('B', 2, 2);
-            Console.WriteLine(pB);
+            Logger.Info(pB);
 
             var pC = new Piece('C', 3, 2, "X.XX.X");
-            Console.WriteLine(pC);
+            Logger.Info(pC);
 
             board.UpdatePiece(pA, new Position(1, 0), Operation.Put, true);
             board.UpdatePiece(pB, new Position(2, 0), Operation.Put, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
 
-            Console.WriteLine(board.SearchPositions(pA).ToString2());
+            Logger.Info(board.SearchPositions(pA).ToString2());
 
             board.UpdatePiece(pA, new Position(1, 0), Operation.Remove, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
 
             var positions = board.SearchPositions(pC);
             board.UpdatePiece(pC, positions[0], Operation.Put, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
         }
 
         static void Test1()
@@ -43,18 +46,18 @@ namespace TetraMinos2
             var pieces = TestLoader.LoadTest("Test1.txt", out board);
 
             board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Put, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
             board.UpdatePiece(pieces['B'], new Position(2, 0), Operation.Put, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
 
-            Console.WriteLine(board.SearchPositions(pieces['A']).ToString2());
+            Logger.Info(board.SearchPositions(pieces['A']).ToString2());
 
             board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Remove, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
 
             var positions = board.SearchPositions(pieces['C']);
             board.UpdatePiece(pieces['C'], positions[0], Operation.Put, true);
-            Console.WriteLine(board);
+            Logger.Info(board);
 
             board.TrySolve(pieces);
         }
@@ -64,17 +67,15 @@ namespace TetraMinos2
             Board board;
             var pieces = TestLoader.LoadTest("Moyen24.txt", out board);
 
-            Console.WriteLine(board);
+            Logger.Info(board);
             foreach (var piece in pieces)
-                Console.WriteLine(piece.Value.ToStringDebug());
+                Logger.Info(piece.Value.ToStringDebug());
 
             board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Put, true);
 
-            Console.WriteLine(board.ToStringDebug());
+            Logger.Info(board.ToStringDebug());
             board.TrySolve(pieces);
         }
-
-
 
         static void Main(string[] args)
         {
@@ -84,11 +85,11 @@ namespace TetraMinos2
             }
             catch (TetraMinoException e)
             {
-                Console.WriteLine(e);
+                Logger.Warn(e);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Logger.Error(e);
             }
         }
     }
