@@ -62,7 +62,7 @@ namespace TetraMinos2
         static void Test2()
         {
             Board board;
-            var pieces = TestLoader.LoadTest("Test1.txt", out board);
+            var pieces = TestLoader.LoadTest("Moyen24.txt", out board);
 
             Console.WriteLine(board);
             foreach (var piece in pieces)
@@ -71,7 +71,7 @@ namespace TetraMinos2
             board.UpdatePiece(pieces['A'], new Position(1, 0), Operation.Put, true);
 
             Console.WriteLine(board.ToStringDebug());
-            //board.TrySolve(pieces.Values.ToList());
+            board.TrySolve(pieces);
         }
 
 

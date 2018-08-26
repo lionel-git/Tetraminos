@@ -9,17 +9,13 @@ namespace TetraMinos2
 {
     public class TestLoader
     {
-        private string _fileName;
-        public TestLoader(string fileName)
-        {
-            _fileName = fileName;
-        }
+        const string BaseDir = "Tests";
 
         public static Dictionary<char, Piece> LoadTest(string fileName, out Board board)
         {
             board = null;
             var pieces = new Dictionary<char, Piece>();
-            using (var file = new StreamReader(fileName))
+            using (var file = new StreamReader(Path.Combine(BaseDir, fileName)))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)

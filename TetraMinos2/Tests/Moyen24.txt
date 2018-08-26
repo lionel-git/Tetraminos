@@ -1,0 +1,9 @@
+﻿# Exemple Moyen 24
+Board,6,5
+Piece,A,2,3,XX..XX
+Piece,B,2,3,XXX..X
+Piece,C,5,2,X.X.XXX.X.
+Piece,D,2,2,
+Piece,E,3,3,..XXXX.XX
+Piece,F,2,2,X.XX
+Piece,G,3,1,
