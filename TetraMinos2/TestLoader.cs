@@ -15,6 +15,7 @@ namespace TetraMinos2
         {
             board = null;
             var pieces = new Dictionary<char, Piece>();
+            char? id = null;
             using (var file = new StreamReader(Path.Combine(BaseDir, fileName)))
             {
                 string line;
@@ -28,9 +29,15 @@ namespace TetraMinos2
                             case "board":
                                 board = new Board(int.Parse(tokens[1]), int.Parse(tokens[2]));
                                 break;
+                            case "name":
+                                if (id != null)
+                                    throw new TetraMinoException($"Name already declared in file {fileName}");
+                                id = char.Parse(tokens[1]);
+                                break;
                             case "piece":
-                                var id = char.Parse(tokens[1]);
-                                pieces.Add(id, new Piece(id, int.Parse(tokens[2]), int.Parse(tokens[3]), tokens[4]));
+                                int occurences = int.Parse(tokens[1]);
+                                pieces.Add(id.Value, new Piece(id.Value, int.Parse(tokens[1]), int.Parse(tokens[2]), int.Parse(tokens[3]), tokens[4]));
+                                id = (char)((byte)id + occurences);
                                 break;
                         }
                     }

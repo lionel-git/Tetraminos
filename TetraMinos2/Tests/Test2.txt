@@ -1,7 +1,7 @@
 ﻿#Test Config
 Board,5,3
 Name,A
-Piece,1,1,3,
+Piece,2,1,3,
 Piece,1,2,2,
 Piece,1,3,2,X.XX.X
 Piece,1,3,2,X.XXX.

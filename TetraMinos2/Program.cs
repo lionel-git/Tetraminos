@@ -17,13 +17,13 @@ namespace TetraMinos2
             Logger.Info(board);
             Logger.Info(board.ToStringDebug());
 
-            var pA = new Piece('A', 1, 3);
+            var pA = new Piece('A', 1, 1, 3);
             Logger.Info(pA);
 
-            var pB = new Piece('B', 2, 2);
+            var pB = new Piece('B', 1, 2, 2);
             Logger.Info(pB);
 
-            var pC = new Piece('C', 3, 2, "X.XX.X");
+            var pC = new Piece('C', 1, 3, 2, "X.XX.X");
             Logger.Info(pC);
 
             board.UpdatePiece(pA, new Position(1, 0), Operation.Put, true);
@@ -62,6 +62,18 @@ namespace TetraMinos2
             board.TrySolve(pieces);
         }
 
+        static void Test1b()
+        {
+            Board board;
+            var pieces = TestLoader.LoadTest("Test2.txt", out board);
+
+            Logger.Info(board);
+            foreach (var piece in pieces)
+                Logger.Info(piece.Value.ToStringDebug());
+
+//            board.TrySolve(pieces);
+        }
+
         static void Test2()
         {
             Board board;
@@ -80,11 +92,13 @@ namespace TetraMinos2
         
         }
 
+
+
         static void Main(string[] args)
         {
             try
             {
-                Test2();
+                Test1b();
             }
             catch (TetraMinoException e)
             {

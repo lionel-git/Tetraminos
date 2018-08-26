@@ -1,0 +1,9 @@
+﻿ Dans Piece, gérer liste de noms
+ => plusieurs exemplaire de la meme piece
+
+ Add , remove, inc/decremente liste
+
+ Rajouter double complexity dans piece, trier les pieces par ce champ
+
+ Dans le fichier, supprimer nom et incrementer A-Z => a-z
+ Start name

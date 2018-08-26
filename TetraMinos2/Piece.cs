@@ -46,7 +46,7 @@ namespace TetraMinos2
                 return 0;
         }
 
-        public Piece(char id, int rows, int columns, string datas = null)
+        public Piece(char id, int occurences, int rows, int columns, string datas = null)
         {
             _id = id;
             _rows = rows;

@@ -115,6 +115,17 @@ namespace TetraMinos2
             return positions;
         }
 
+
+        // Find free position on board with high n4C/n4D
+        private Position SearchMostDifficult()
+        {
+
+
+
+            return new Position(0, 0);
+        }
+
+
         // Recursive search, Algo:
         // Sort free positions by decreasing complexity (n4C + n4D high)
         // for a position, sort pieces by complexity (presorted, sorted dictionnary?)
@@ -134,33 +145,37 @@ namespace TetraMinos2
             }
             else
             {
-                // Search most difficult free position on the board
-                int rowFree = 0;
-                int columnFree = 0;
-
-
-
+                var position = SearchMostDifficult();
 
                 // Iterer sur les pieces + points
-                var piece = pieces.First();
-                int rowPoint = 0;
-                int columnPoint = 0;
+                // attention on ne peut pas iterer sur collection modifiee
 
-                int row = rowFree + rowPoint;
-                int column = columnFree + columnPoint;
-                if (!IsCollision(row, column, piece.Value))
+
+
+                var piece = pieces.First();
                 {
-                    pieces.Remove(piece.Key);
-                    UpdatePiece(piece.Value, new Position(row, column), Operation.Put, true);
-                    if (Solve(pieces))
-                        return true;
-                    else
+                    // Check available points
+
+
+                    // Point de la piece
+                    int rowPoint = 0;
+                    int columnPoint = 0;
+
+                    int row = position.Row + rowPoint;
+                    int column = position.Column + columnPoint;
+                    if (!IsCollision(row, column, piece.Value))
                     {
-                        UpdatePiece(piece.Value, new Position(row, column), Operation.Remove, true);
-                        pieces.Add(piece.Key, piece.Value);
+                        pieces.Remove(piece.Key);
+                        UpdatePiece(piece.Value, new Position(row, column), Operation.Put, true);
+                        if (Solve(pieces))
+                            return true;
+                        else
+                        {
+                            UpdatePiece(piece.Value, new Position(row, column), Operation.Remove, true);
+                            pieces.Add(piece.Key, piece.Value);
+                        }
                     }
                 }
-               
                 return false;
             }
         }
