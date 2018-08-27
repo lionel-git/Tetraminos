@@ -13,6 +13,9 @@ namespace TetraMinos2
     {
         static readonly ILog Logger = LogManager.GetLogger(nameof(Board));
 
+        private bool _solveForOne;
+        private int _solutions;
+
         private int _rows;
         private int _columns;
 
@@ -89,7 +92,7 @@ namespace TetraMinos2
                         int row = position.Row + i;
                         int column = position.Column + j;
                         if (check && this[row, column] != oldValue)
-                            throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Name}' on position {position}");
+                            throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Names}' on position {position}");
                         this[row, column] = newValue;
                         UpdateNeighBoors(row, column, incNeighboor);
                     }
@@ -119,7 +122,7 @@ namespace TetraMinos2
         private Position SearchMostDifficult()
         {
             var position = new Position(int.MinValue, int.MinValue);
-            int maxDifficulty = -100;
+            int maxDifficulty = int.MinValue;
             for (int i = 0; i < Rows; i++)
                 for (int j = 0; j < Columns; j++)
                     if (this[i, j] == Constants.Empty)
@@ -151,6 +154,7 @@ namespace TetraMinos2
             {
                 Logger.Info("Solution found !!");
                 Logger.Info(ToString());
+                _solutions++;
                 return true;
             }
             else
@@ -177,7 +181,7 @@ namespace TetraMinos2
                     {
                         pieces.Remove(piece.Key);
                         UpdateBoard(piece.Value, new Position(row, column), Operation.Put, true);
-                        if (Solve(pieces))
+                        if (Solve(pieces) && _solveForOne)
                             return true;
                         else
                         {
@@ -190,9 +194,11 @@ namespace TetraMinos2
             }
         }
 
-        public void TrySolve(Dictionary<char, Piece> pieces)
+        public void TrySolve(Dictionary<char, Piece> pieces, bool solveForOne = true)
         {
             Logger.Info("Starting solve...");
+
+
 
             // Check some conditions
             int area = 0;
@@ -214,9 +220,74 @@ namespace TetraMinos2
             if (maxColumns > Columns)
                 throw new TetraMinoException($"A piece is too large: {maxColumns} > {Columns}");
 
+            // Check all pieces are differents
+            var pieceList = pieces.Values.ToList();
+            for (int i = 0; i < pieceList.Count; i++)
+                for (int j = i + 1; j < pieceList.Count; j++)
+                    if (pieceList[i].Equals(pieceList[j]))
+                        throw new TetraMinoException($"Two pieces are identical: {pieceList[i]} and {pieceList[j]}");
+
+            _solveForOne = solveForOne;
             Solve(pieces);
 
             Logger.Info("End solve.");
+        }
+
+        private static Piece GeneratePiece(int id, List<Position> positions)
+        {
+            int minRow = int.MaxValue;
+            int maxRow = int.MinValue;
+            int minColumn = int.MaxValue;
+            int maxColumn = int.MinValue;
+            foreach (var position in positions)
+            {
+                minRow = Math.Min(minRow, position.Row);
+                maxRow = Math.Max(maxRow, position.Row);
+                minColumn = Math.Min(minColumn, position.Column);
+                maxColumn = Math.Max(maxColumn, position.Column);
+            }
+
+            int rows = maxRow - minRow + 1;
+            int columns = maxColumn - minColumn + 1;
+            byte[] buffer = new byte[rows * columns];
+            foreach (var position in positions)
+                buffer[(position.Row - minRow) * columns + (position.Column - minColumn)] = (byte)Piece.FlagOn;
+
+            return new Piece(id, 1, maxRow - minRow + 1, maxColumn - minColumn + 1, Encoding.ASCII.GetString(buffer));
+        }
+
+        // For checking: reload list of pieces from board
+        public Dictionary<Piece, int> LoadPiecesFromBoard()
+        {
+            // First gather id and positions
+            var piecesPos = new Dictionary<int, List<Position>>();
+            for (int i = 0; i < Rows; i++)
+                for (int j = 0; j < Columns; j++)
+                {
+                    int id = this[i, j];
+                    if (id != Constants.Empty)
+                    {
+                        List<Position> positions;
+                        if (!piecesPos.TryGetValue(id, out positions))
+                        {
+                            positions = new List<Position>();
+                            piecesPos.Add(id, positions);
+                        }
+                        positions.Add(new Position(i, j));
+                    }
+                }
+
+            var pieces = new Dictionary<Piece, int>();
+            foreach (var piecePos in piecesPos)                
+            {
+                var piece = GeneratePiece(piecePos.Key, piecePos.Value);
+                if (pieces.ContainsKey(piece))
+                    pieces[piece]++;
+                else
+                    pieces.Add(piece, 1);
+            }
+
+            return pieces;
         }
 
         public override string ToString()
@@ -232,7 +303,7 @@ namespace TetraMinos2
             return sb.ToString();
         }
 
-        public string ToStringDebug(bool completeBoard=false)
+        public string ToStringDebug(bool completeBoard = false)
         {
             var sb = new StringBuilder();
             if (completeBoard)

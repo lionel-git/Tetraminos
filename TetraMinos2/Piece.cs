@@ -14,14 +14,16 @@ namespace TetraMinos2
         private int _columns;
         private bool[,] _datas;
 
+        private int _occurences;
+        private int _current;
+
         // Computed
         private int _area;
         public int Rows => _rows;
         public int Columns => _columns;
+        private int _hashCode;
 
         public int Id => _id;
-
-        public char Name => (char)_id;
 
         public int Area => _area;
 
@@ -29,6 +31,21 @@ namespace TetraMinos2
         private List<Point>[] _pointsN4;
         // Points sorted by N8
         private List<Point>[] _pointsN8;
+
+        private char CurrentName => (char)(_id + _current);
+
+        public const char FlagOn = 'X';
+
+        public string Names
+        {
+            get
+            {
+                if (_occurences == 1)
+                    return $"{(char)_id}";
+                else
+                    return $"[{(char)_id}-{(char)(_id + _occurences - 1)}]";
+            }
+        }
 
         public bool this[int i, int j]
         {
@@ -46,11 +63,36 @@ namespace TetraMinos2
                 return 0;
         }
 
-        public Piece(char id, int occurences, int rows, int columns, string datas = null)
+        public override bool Equals(object piece)
+        {
+            var rhs = piece as Piece;
+            if (piece == null)
+                throw new Exception($"Invalid comparison of piece with type: '{rhs.GetType()}'");
+
+            if (GetHashCode() != rhs.GetHashCode())
+                return false;
+
+            for (int i = 0; i < Rows; i++)
+                for (int j = 0; j < Columns; j++)
+                    if (CheckPos(i, j) != rhs.CheckPos(i, j))
+                        return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
+
+        public Piece(int id, int occurences, int rows, int columns, string datas = null)
         {
             _id = id;
             _rows = rows;
             _columns = columns;
+            _occurences = occurences;
+            _current = 0;
             _datas = Helpers.InitArray(_rows, _columns, true);
             if (!string.IsNullOrEmpty(datas))
             {
@@ -59,7 +101,7 @@ namespace TetraMinos2
                 int k = 0;
                 for (int i = 0; i < _rows; i++)
                     for (int j = 0; j < _columns; j++)
-                        if (datas[k++] == 'X')
+                        if (datas[k++] == FlagOn)
                             _datas[i, j] = true;
                         else
                             _datas[i, j] = false;
@@ -67,6 +109,8 @@ namespace TetraMinos2
             CheckConsistency();
             ComputeDatas();
         }
+
+       
 
         private void CheckConsistency()
         {
@@ -83,7 +127,7 @@ namespace TetraMinos2
                 bottom = bottom || this[Rows - 1, j];
             }
             if (!left || !right || !top || !bottom)
-                throw new TetraMinoException($"Piece '{Name}' is invalid");
+                throw new TetraMinoException($"Piece '{Names}' is invalid");
             // Check if connex?
 
         }
@@ -94,6 +138,11 @@ namespace TetraMinos2
             for (int i = 0; i < arrayList.Length; i++)
                 arrayList[i] = new List<Point>();
             return arrayList;
+        }
+
+        private int ComputeHashCode()
+        {
+            return (Rows << 0) ^ (Columns << 8) ^ (Area << 16) ^ TabHashing.Hash(_datas);
         }
 
         private void ComputeDatas()
@@ -114,16 +163,23 @@ namespace TetraMinos2
                         _pointsN8[point.Neighboor8].Add(point);
                         _area++;
                     }
+            _hashCode = ComputeHashCode();
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Piece {Name} ({Rows},{Columns}):");
+            sb.AppendLine($"Piece {Names} ({Rows},{Columns}):");
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Columns; j++)
-                    sb.Append(" ").Append(Constants.ConvertCell(this[i, j]));
+                {
+                    sb.Append(" ");
+                    if (this[i, j])
+                        sb.Append(CurrentName);
+                    else
+                        sb.Append(Constants.Off);
+                }
                 if (i < Rows - 1)
                     sb.AppendLine();
             }

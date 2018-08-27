@@ -59,7 +59,12 @@ namespace TetraMinos2
             board.UpdateBoard(pieces['C'], positions[0], Operation.Put, true);
             Logger.Info(board);
 
-            board.TrySolve(pieces);
+        //    board.TrySolve(pieces);
+
+            var piecesD = board.LoadPiecesFromBoard();
+            foreach (var pieceD in piecesD)
+                Logger.Info($"{pieceD.Value} occurence of {pieceD.Key}");
+
         }
 
         static void Test1b()
@@ -71,7 +76,9 @@ namespace TetraMinos2
             foreach (var piece in pieces)
                 Logger.Info(piece.Value.ToStringDebug());
 
-//            board.TrySolve(pieces);
+           
+
+            //            board.TrySolve(pieces);
         }
 
         static void Test2()
@@ -87,9 +94,6 @@ namespace TetraMinos2
 
             Logger.Info(board.ToStringDebug());
             board.TrySolve(pieces);
-
-           
-        
         }
 
 
@@ -98,6 +102,7 @@ namespace TetraMinos2
         {
             try
             {
+               // Test1(); return;
                 Test2();
             }
             catch (TetraMinoException e)
