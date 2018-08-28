@@ -16,6 +16,14 @@ namespace TetraMinos2
             return sb.ToString();
         }
 
+        public static List<Point>[] InitAList(int n)
+        {
+            var arrayList = new List<Point>[n];
+            for (int i = 0; i < arrayList.Length; i++)
+                arrayList[i] = new List<Point>();
+            return arrayList;
+        }
+
         public static T[,] InitArray<T>(int rows, int columns, T value = default(T))
         {
             var datas = new T[rows, columns];

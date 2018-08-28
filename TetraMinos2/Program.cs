@@ -70,13 +70,26 @@ namespace TetraMinos2
         static void Test1b()
         {
             Board board;
-            var pieces = TestLoader.LoadTest("Test2.txt", out board);
+            var piecesD = TestLoader.LoadTest("Test2.txt", out board);
 
+            foreach (var pieceD in piecesD)
+                Logger.Info($"{pieceD.Value}");
+
+            board.UpdateBoard(piecesD['A'], new Position(1, 0), Operation.Put, true);
             Logger.Info(board);
-            foreach (var piece in pieces)
-                Logger.Info(piece.Value.ToStringDebug());
+            board.UpdateBoard(piecesD['A'], new Position(2, 0), Operation.Put, true);
+            Logger.Info(board);
 
-           
+            board.UpdateBoard(piecesD['A'], new Position(2, 0), Operation.Remove, true);
+            Logger.Info(board);
+
+            board.UpdateBoard(piecesD['A'], new Position(1, 0), Operation.Remove, true);
+            Logger.Info(board);
+
+            /*foreach (var piece in pieces)
+                Logger.Info(piece.Value.ToStringDebug());
+                */
+
 
             //            board.TrySolve(pieces);
         }
@@ -102,7 +115,7 @@ namespace TetraMinos2
         {
             try
             {
-               // Test1(); return;
+                //Test1b(); return;
                 Test2();
             }
             catch (TetraMinoException e)

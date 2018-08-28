@@ -81,9 +81,24 @@ namespace TetraMinos2
 
         public void UpdateBoard(Piece piece, Position position, Operation operation, bool check)
         {
-            int newValue = (operation == Operation.Put ? piece.Id : Constants.Empty);
-            int oldValue = (operation == Operation.Put ? Constants.Empty : piece.Id);
-            int incNeighboor = (operation == Operation.Put ? +1 : -1);
+            int newValue, oldValue, increment;
+            switch (operation)
+            {
+                case Operation.Put:
+                    newValue = piece.CurrentId;
+                    oldValue = Constants.Empty;
+                    increment = +1;
+                    break;
+
+                case Operation.Remove:
+                    newValue = Constants.Empty;
+                    oldValue = piece.CurrentId - 1; // The previous current Id
+                    increment = -1;
+                    break;
+
+                default:
+                    throw new Exception($"Invalid operation: {operation}");
+            }
 
             for (int i = 0; i < piece.Rows; i++)
                 for (int j = 0; j < piece.Columns; j++)
@@ -94,8 +109,10 @@ namespace TetraMinos2
                         if (check && this[row, column] != oldValue)
                             throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Names}' on position {position}");
                         this[row, column] = newValue;
-                        UpdateNeighBoors(row, column, incNeighboor);
+                        UpdateNeighBoors(row, column, increment);
                     }
+
+            piece.UpdateCurrentId(increment);
         }
 
         private bool IsCollision(int row, int column, Piece piece)
@@ -138,6 +155,27 @@ namespace TetraMinos2
             return position;
         }
 
+        // That pieces on the board match original list
+        private string CheckResult(List<Piece> pieces)
+        {
+            var piecesD = LoadPiecesFromBoard();
+            foreach (var piece in pieces)
+            {
+                int occurences;
+                if (piecesD.TryGetValue(piece, out occurences))
+                {
+                    if (occurences == piece.Occurences)
+                        piecesD.Remove(piece);
+                    else
+                        return $"Mismatch occurences on piece {piece}/{occurences}";                        
+                }
+                else
+                    return $"Piece missing on board : {piece}";
+            }
+            if (piecesD.Count != 0)
+                return $"{pieces.Count} pieces are in suplus on board";
+            return null;
+        }
 
         // Recursive search, Algo:
         // Sort free positions by decreasing complexity (n4C + n4D high)
@@ -147,46 +185,47 @@ namespace TetraMinos2
         // if ok => Place piece + recurse
         // Recurse succeed => return true
         // Recurse fails => next point/piece
-        public bool Solve(Dictionary<char, Piece> pieces)
+        public bool Solve(List<Piece> pieces)
         {
-            Logger.Debug($"{pieces.Count} pieces, solve for {ToStringDebug()}");
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"{pieces.Where(x => x.IsAvailable).Count()} pieces, solve for {ToStringDebug()}");
             if (pieces.Count == 0)
             {
                 Logger.Info("Solution found !!");
                 Logger.Info(ToString());
+                var msg = CheckResult(pieces);
+                if (string.IsNullOrEmpty(msg))
+                    Logger.Info("Solution is verified....");
+                else
+                    Logger.Info($"Solution is incorrect: {msg}");
                 _solutions++;
                 return true;
             }
             else
             {
                 var position = SearchMostDifficult();
-                Logger.Debug($"Position = {position}");
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"Position = {position}");
+
                 // Iterer sur les pieces + points
                 // attention on ne peut pas iterer sur collection modifiee
-
-
-
-                var piece = pieces.First();
+                foreach (var piece in pieces)
                 {
-                    // Check available points
-
-
-                    // Point de la piece
-                    int rowPoint = 0;
-                    int columnPoint = 0;
-
-                    int row = position.Row + rowPoint;
-                    int column = position.Column + columnPoint;
-                    if (!IsCollision(row, column, piece.Value))
+                    if (piece.IsAvailable)
                     {
-                        pieces.Remove(piece.Key);
-                        UpdateBoard(piece.Value, new Position(row, column), Operation.Put, true);
-                        if (Solve(pieces) && _solveForOne)
-                            return true;
-                        else
+                        // Check available points
+                        // Point de la piece
+                        int rowPoint = 0;
+                        int columnPoint = 0;
+
+                        int row = position.Row + rowPoint;
+                        int column = position.Column + columnPoint;
+                        if (!IsCollision(row, column, piece))
                         {
-                            UpdateBoard(piece.Value, new Position(row, column), Operation.Remove, true);
-                            pieces.Add(piece.Key, piece.Value);
+                            UpdateBoard(piece, new Position(row, column), Operation.Put, true);
+                            if (Solve(pieces) && _solveForOne)
+                                return true;
+                            UpdateBoard(piece, new Position(row, column), Operation.Remove, true);
                         }
                     }
                 }
@@ -197,8 +236,6 @@ namespace TetraMinos2
         public void TrySolve(Dictionary<char, Piece> pieces, bool solveForOne = true)
         {
             Logger.Info("Starting solve...");
-
-
 
             // Check some conditions
             int area = 0;
@@ -228,9 +265,9 @@ namespace TetraMinos2
                         throw new TetraMinoException($"Two pieces are identical: {pieceList[i]} and {pieceList[j]}");
 
             _solveForOne = solveForOne;
-            Solve(pieces);
+            Solve(pieces.Values.OrderByDescending(x => x.Complexity).ToList());
 
-            Logger.Info("End solve.");
+            Logger.Info($"End solve, solutions: {_solutions} , solForOne={_solveForOne}");
         }
 
         private static Piece GeneratePiece(int id, List<Position> positions)

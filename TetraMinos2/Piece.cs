@@ -19,20 +19,32 @@ namespace TetraMinos2
 
         // Computed
         private int _area;
+        private double _complexity;
+
         public int Rows => _rows;
         public int Columns => _columns;
         private int _hashCode;
 
-        public int Id => _id;
+        public int CurrentId => _id + _current;
 
         public int Area => _area;
+
+        public double Complexity => _complexity;
+
+        public int Occurences => _occurences;
 
         // Points sorted by N4
         private List<Point>[] _pointsN4;
         // Points sorted by N8
         private List<Point>[] _pointsN8;
 
-        private char CurrentName => (char)(_id + _current);
+        private char CurrentName
+        {
+            get
+            {
+                return (IsAvailable ? (char)(CurrentId) : '#');
+            }
+        }
 
         public const char FlagOn = 'X';
 
@@ -40,12 +52,15 @@ namespace TetraMinos2
         {
             get
             {
+                var available = (IsAvailable ? "" : "(N/A)");
                 if (_occurences == 1)
-                    return $"{(char)_id}";
+                    return $"{available}{(char)_id}";
                 else
-                    return $"[{(char)_id}-{(char)(_id + _occurences - 1)}]";
+                    return $"({available}{_occurences})[{(char)_id}-{(char)(_id + _occurences - 1)}] ";
             }
         }
+
+        public bool IsAvailable => (_current < _occurences);
 
         public bool this[int i, int j]
         {
@@ -110,7 +125,13 @@ namespace TetraMinos2
             ComputeDatas();
         }
 
-       
+        public void UpdateCurrentId(int inc)
+        {
+            _current += inc;
+            // Valid range [ 0 - _occurences], _current=_occurences means the piece is no more available
+            if (_current < 0 || _current > _occurences)
+                throw new Exception($"Piece {this} invalid currentId: {_current}/{_occurences}");
+        }
 
         private void CheckConsistency()
         {
@@ -132,23 +153,21 @@ namespace TetraMinos2
 
         }
 
-        private List<Point>[] InitAList(int n)
-        {
-            var arrayList = new List<Point>[n];
-            for (int i = 0; i < arrayList.Length; i++)
-                arrayList[i] = new List<Point>();
-            return arrayList;
-        }
-
         private int ComputeHashCode()
         {
             return (Rows << 0) ^ (Columns << 8) ^ (Area << 16) ^ TabHashing.Hash(_datas);
         }
 
+#warning !!!!! To Be Done !!!!
+        private double CalculateComplexity()
+        {
+            return _id;
+        }
+
         private void ComputeDatas()
         {
-            _pointsN4 = InitAList(Point.N4Size);
-            _pointsN8 = InitAList(Point.N8Size);
+            _pointsN4 = Helpers.InitAList(Point.N4Size);
+            _pointsN8 = Helpers.InitAList(Point.N8Size);
             _area = 0;
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
@@ -164,6 +183,7 @@ namespace TetraMinos2
                         _area++;
                     }
             _hashCode = ComputeHashCode();
+            _complexity = CalculateComplexity();
         }
 
         public override string ToString()
