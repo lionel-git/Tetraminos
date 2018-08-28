@@ -19,7 +19,7 @@ namespace TetraMinos2
             if (_xorTable == null)
             {
                 _xorTable = new int[2, MaxDatas];
-                Random rnd = new Random();
+                Random rnd = new Random(1234567890);
                 for (int i = 0; i < MaxDatas; i++)
                 {
                     _xorTable[0, i] = rnd.Next(int.MinValue, int.MaxValue);

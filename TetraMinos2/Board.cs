@@ -191,21 +191,22 @@ namespace TetraMinos2
                 Logger.Debug($"{pieces.Where(x => x.IsAvailable).Count()} pieces, solve for {ToStringDebug()}");
             if (pieces.Count == 0)
             {
-                Logger.Info("Solution found !!");
-                Logger.Info(ToString());
-                var msg = CheckResult(pieces);
-                if (string.IsNullOrEmpty(msg))
+                Logger.Info($"Solution found:\n{ToString()}");
+                var message = CheckResult(pieces);
+                if (string.IsNullOrEmpty(message))
                     Logger.Info("Solution is verified....");
                 else
-                    Logger.Info($"Solution is incorrect: {msg}");
+                    Logger.Info($"Solution is incorrect: {message}");
                 _solutions++;
                 return true;
             }
             else
             {
                 var position = SearchMostDifficult();
+                int n4C = _n4C[position.Row, position.Column];
+                int n4D = _n4D[position.Row, position.Column];
                 if (Logger.IsDebugEnabled)
-                    Logger.Debug($"Position = {position}");
+                    Logger.Debug($"Position = {position} n4C={n4C} n4D={n4D}");
 
                 // Iterer sur les pieces + points
                 // attention on ne peut pas iterer sur collection modifiee
@@ -213,8 +214,7 @@ namespace TetraMinos2
                 {
                     if (piece.IsAvailable)
                     {
-                        // Check available points
-                        // Point de la piece
+                        // Check available points de la piece avec n4D/n4C                        
                         int rowPoint = 0;
                         int columnPoint = 0;
 
