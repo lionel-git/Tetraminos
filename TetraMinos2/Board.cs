@@ -203,10 +203,10 @@ namespace TetraMinos2
             else
             {
                 var position = SearchMostDifficult();
-                int n4C = _n4C[position.Row, position.Column];
-                int n4D = _n4D[position.Row, position.Column];
+                int maxN4C = 4 - _n4C[1 + position.Row, 1 + position.Column];
+                int maxN4D = 4 - _n4D[1 + position.Row, 1 + position.Column];
                 if (Logger.IsDebugEnabled)
-                    Logger.Debug($"Position = {position} n4C={n4C} n4D={n4D}");
+                    Logger.Debug($"Position = {position} maxN4C={maxN4C} maxN4D={maxN4D}");
 
                 // Iterer sur les pieces + points
                 // attention on ne peut pas iterer sur collection modifiee
@@ -214,7 +214,8 @@ namespace TetraMinos2
                 {
                     if (piece.IsAvailable)
                     {
-                        // Check available points de la piece avec n4D/n4C                        
+                        // Check available points de la piece avec maxN4D/maxN4C
+                        // tester par ordre decroissant maxN4D jusqu'a 0                        
                         int rowPoint = 0;
                         int columnPoint = 0;
 
