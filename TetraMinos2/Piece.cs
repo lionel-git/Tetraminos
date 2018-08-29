@@ -18,7 +18,6 @@ namespace TetraMinos2
         private int _current;
 
         // Computed
-        private int _area;
         private double _complexity;
 
         public int Rows => _rows;
@@ -27,16 +26,21 @@ namespace TetraMinos2
 
         public int CurrentId => _id + _current;
 
-        public int Area => _area;
+        public int Area => _points.Count;
 
         public double Complexity => _complexity;
 
         public int Occurences => _occurences;
 
+        // List of points from (0,0) in the piece
+        private List<Point> _points;
+
         // Points sorted by N4
         private List<Point>[] _pointsN4;
         // Points sorted by N8
         private List<Point>[] _pointsN8;
+
+        public List<Point> Points => _points;
 
         private char CurrentName
         {
@@ -166,9 +170,9 @@ namespace TetraMinos2
 
         private void ComputeDatas()
         {
+            _points = new List<Point>();
             _pointsN4 = Helpers.InitAList(Point.N4Size);
             _pointsN8 = Helpers.InitAList(Point.N8Size);
-            _area = 0;
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
                     if (this[i, j])
@@ -180,7 +184,7 @@ namespace TetraMinos2
                             + CheckPos(i - 1, j - 1) + CheckPos(i + 1, j + 1) + CheckPos(i + 1, j - 1) + CheckPos(i - 1, j + 1);
                         _pointsN4[point.Neighboor4].Add(point);
                         _pointsN8[point.Neighboor8].Add(point);
-                        _area++;
+                        _points.Add(point);
                     }
             _hashCode = ComputeHashCode();
             _complexity = CalculateComplexity();
@@ -189,7 +193,7 @@ namespace TetraMinos2
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Piece {Names} ({Rows},{Columns}):");
+            sb.AppendLine($"Piece {Names} ({Rows},{Columns}) C={Complexity}:");
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Columns; j++)

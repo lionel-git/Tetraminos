@@ -29,6 +29,11 @@ namespace TetraMinos2
         public int Rows => _rows;
         public int Columns => _columns;
 
+        // Stats
+        private UInt64 _callsSolve;
+        private UInt64 _callsUpdateBoard;
+        private UInt64 _callsUpdateNeighBoor;
+
         public int this[int i, int j]
         {
             get
@@ -68,6 +73,7 @@ namespace TetraMinos2
 
         private void UpdateNeighBoors(int row, int column, int increment)
         {
+            _callsUpdateNeighBoor++;
             _n4C[1 + row - 1, 1 + column + 0] += increment;
             _n4C[1 + row + 1, 1 + column + 0] += increment;
             _n4C[1 + row + 0, 1 + column - 1] += increment;
@@ -79,8 +85,9 @@ namespace TetraMinos2
             _n4D[1 + row - 1, 1 + column + 1] += increment;
         }
 
-        public void UpdateBoard(Piece piece, Position position, Operation operation, bool check)
+        public void UpdateBoard(Piece piece, int boardRow, int boardColumn, Operation operation, bool check)
         {
+            _callsUpdateBoard++;
             int newValue, oldValue, increment;
             switch (operation)
             {
@@ -100,17 +107,15 @@ namespace TetraMinos2
                     throw new Exception($"Invalid operation: {operation}");
             }
 
-            for (int i = 0; i < piece.Rows; i++)
-                for (int j = 0; j < piece.Columns; j++)
-                    if (piece[i, j])
-                    {
-                        int row = position.Row + i;
-                        int column = position.Column + j;
-                        if (check && this[row, column] != oldValue)
-                            throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Names}' on position {position}");
-                        this[row, column] = newValue;
-                        UpdateNeighBoors(row, column, increment);
-                    }
+            foreach (var p in  piece.Points)
+            {
+                int row = boardRow + p.Position.Row;
+                int column = boardColumn + p.Position.Column;
+                if (check && this[row, column] != oldValue)
+                    throw new TetraMinoException($"Invalid operation '{operation}' with piece '{piece.Names}' on position ({boardRow},{boardColumn})");
+                this[row, column] = newValue;
+                UpdateNeighBoors(row, column, increment);
+            }
 
             piece.UpdateCurrentId(increment);
         }
@@ -187,6 +192,7 @@ namespace TetraMinos2
         // Recurse fails => next point/piece
         public bool Solve(List<Piece> pieces)
         {
+            _callsSolve++;
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"{pieces.Where(x => x.IsAvailable).Count()} pieces, solve for {ToStringDebug()}");
             if (pieces.Count == 0)
@@ -223,15 +229,22 @@ namespace TetraMinos2
                         int column = position.Column + columnPoint;
                         if (!IsCollision(row, column, piece))
                         {
-                            UpdateBoard(piece, new Position(row, column), Operation.Put, true);
+                            UpdateBoard(piece, row, column, Operation.Put, true);
                             if (Solve(pieces) && _solveForOne)
                                 return true;
-                            UpdateBoard(piece, new Position(row, column), Operation.Remove, true);
+                            UpdateBoard(piece, row, column, Operation.Remove, true);
                         }
                     }
                 }
                 return false;
             }
+        }
+
+        private void ResetStats()
+        {
+            _callsSolve = 0;
+            _callsUpdateBoard = 0;
+            _callsUpdateNeighBoor = 0;
         }
 
         public void TrySolve(Dictionary<char, Piece> pieces, bool solveForOne = true)
@@ -266,9 +279,11 @@ namespace TetraMinos2
                         throw new TetraMinoException($"Two pieces are identical: {pieceList[i]} and {pieceList[j]}");
 
             _solveForOne = solveForOne;
+            ResetStats();
             Solve(pieces.Values.OrderByDescending(x => x.Complexity).ToList());
 
             Logger.Info($"End solve, solutions: {_solutions} , solForOne={_solveForOne}");
+            Logger.Info($"Stats: #Solve={_callsSolve} #UpdateBoard={_callsUpdateBoard} #UpdateNeighBoor={_callsUpdateNeighBoor}");
         }
 
         private static Piece GeneratePiece(int id, List<Position> positions)

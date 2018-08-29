@@ -26,17 +26,17 @@ namespace TetraMinos2
             var pC = new Piece('C', 1, 3, 2, "X.XX.X");
             Logger.Info(pC);
 
-            board.UpdateBoard(pA, new Position(1, 0), Operation.Put, true);
-            board.UpdateBoard(pB, new Position(2, 0), Operation.Put, true);
+            board.UpdateBoard(pA, 1, 0, Operation.Put, true);
+            board.UpdateBoard(pB, 2, 0, Operation.Put, true);
             Logger.Info(board);
 
             Logger.Info(board.SearchPositions(pA).ToString2());
 
-            board.UpdateBoard(pA, new Position(1, 0), Operation.Remove, true);
+            board.UpdateBoard(pA, 1, 0, Operation.Remove, true);
             Logger.Info(board);
 
             var positions = board.SearchPositions(pC);
-            board.UpdateBoard(pC, positions[0], Operation.Put, true);
+            board.UpdateBoard(pC, positions[0].Row, positions[0].Column, Operation.Put, true);
             Logger.Info(board);
         }
 
@@ -45,18 +45,18 @@ namespace TetraMinos2
             Board board;
             var pieces = TestLoader.LoadTest("Test1.txt", out board);
 
-            board.UpdateBoard(pieces['A'], new Position(1, 0), Operation.Put, true);
+            board.UpdateBoard(pieces['A'], 1, 0, Operation.Put, true);
             Logger.Info(board);
-            board.UpdateBoard(pieces['B'], new Position(2, 0), Operation.Put, true);
+            board.UpdateBoard(pieces['B'], 2, 0, Operation.Put, true);
             Logger.Info(board);
 
             Logger.Info(board.SearchPositions(pieces['A']).ToString2());
 
-            board.UpdateBoard(pieces['A'], new Position(1, 0), Operation.Remove, true);
+            board.UpdateBoard(pieces['A'], 1, 0, Operation.Remove, true);
             Logger.Info(board);
 
             var positions = board.SearchPositions(pieces['C']);
-            board.UpdateBoard(pieces['C'], positions[0], Operation.Put, true);
+            board.UpdateBoard(pieces['C'], positions[0].Row, positions[0].Column, Operation.Put, true);
             Logger.Info(board);
 
         //    board.TrySolve(pieces);
@@ -75,15 +75,15 @@ namespace TetraMinos2
             foreach (var pieceD in piecesD)
                 Logger.Info($"{pieceD.Value}");
 
-            board.UpdateBoard(piecesD['A'], new Position(1, 0), Operation.Put, true);
+            board.UpdateBoard(piecesD['A'], 1, 0, Operation.Put, true);
             Logger.Info(board);
-            board.UpdateBoard(piecesD['A'], new Position(2, 0), Operation.Put, true);
-            Logger.Info(board);
-
-            board.UpdateBoard(piecesD['A'], new Position(2, 0), Operation.Remove, true);
+            board.UpdateBoard(piecesD['A'], 2, 0, Operation.Put, true);
             Logger.Info(board);
 
-            board.UpdateBoard(piecesD['A'], new Position(1, 0), Operation.Remove, true);
+            board.UpdateBoard(piecesD['A'], 2, 0, Operation.Remove, true);
+            Logger.Info(board);
+
+            board.UpdateBoard(piecesD['A'], 1, 0, Operation.Remove, true);
             Logger.Info(board);
 
             /*foreach (var piece in pieces)

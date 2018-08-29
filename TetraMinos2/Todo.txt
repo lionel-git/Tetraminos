@@ -7,3 +7,7 @@
 
  Dans le fichier, supprimer nom et incrementer A-Z => a-z
  Start name
+
+ - Stats functions: Solve, Updateboard, UpdateNeigboors
+ 
+ - Place piece : List<point>
