@@ -116,12 +116,14 @@ namespace TetraMinos2
 
         static void Test3()
         {
-            var screenShotParser = new ScreenShotParser();
-            screenShotParser.LoadScreenShot(@"ScreenShots\Moyen205.jpg");
-           
-           // screenShotParser.SearchBlackLines();
-            screenShotParser.SearchTopLeftAngle(50, 50);
-            Logger.Info(screenShotParser);
+            foreach (var fileName in new List<string>() { "Moyen205", "Difficile35" })
+            {
+                var screenShotParser = new ScreenShotParser();
+                var fullName = $@"ScreenShots\{fileName}.jpg";
+                screenShotParser.LoadScreenShot(fullName);
+                screenShotParser.SearchTopLeftAngle(50, 50);
+                Logger.Info(screenShotParser);
+            }
         }
 
         static void Main(string[] args)

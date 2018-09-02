@@ -18,15 +18,13 @@ namespace ScreenShotLib
         // Pixels int=(r,g,b) Height(rows) x Width (columns)
         private RGB[,] _pixels;
 
-        private List<Position> _topLeftAngels;
+        private List<TopLeftCorner> _topLeftCorners;
 
         private static readonly RGB Black = new RGB(0, 0, 0);
 
-        int BlackThreshold = 55;
-
         public ScreenShotParser()
         {
-            _topLeftAngels = new List<Position>();
+            _topLeftCorners = new List<TopLeftCorner>();
         }
 
         public void LoadScreenShot(string fileName)
@@ -36,38 +34,48 @@ namespace ScreenShotLib
             _pixels = rawBitMap.ConvertDatas();
         }
 
-        private bool CheckBlackLine(int i, int j, int rows)
+        private bool IsNearBlack(int i, int j)
         {
-            for (int k = 0; k < rows; k++)
-                if (Black.N1(_pixels[i + k, j]) > BlackThreshold)
-                    return false;
-            return true;
+            return Black.N1(_pixels[i, j]) <= 3 * 18;
         }
 
-        private bool CheckBlackColumn(int i, int j, int columns)
+        private int GetBlackRows(int i, int j)
         {
-            for (int k = 0; k < columns; k++)
-                if (Black.N1(_pixels[i, j + k]) > BlackThreshold)
-                    return false;
-            return true;
+            int k = 0;
+            while (i + k < _pixels.GetLength(0) && IsNearBlack(i + k, j))
+                k++;
+            return k;
         }
 
-        private void AddLefAngel(Position newPosition)
+        private int GetBlackColumns(int i, int j)
         {
-            foreach (var position in _topLeftAngels)
-                if (newPosition.N1(position) < 20)
+            int k = 0;
+            while (j + k < _pixels.GetLength(1) && IsNearBlack(i, j + k))
+                k++;
+            return k;
+        }
+
+        private void AddTopLeftCorner(TopLeftCorner newCorner)
+        {
+            foreach (var corner in _topLeftCorners)
+                if (newCorner.N1(corner) < 2 * 10)
                     return;
-            _topLeftAngels.Add(newPosition);
+            _topLeftCorners.Add(newCorner);
         }
 
-        public void SearchTopLeftAngle(int rows, int columns)
+        public void SearchTopLeftAngle(int minRows, int minColumns)
         {
-            _topLeftAngels.Clear();
-            for (int i = 0; i < _pixels.GetLength(0) - rows; i++)
-                for (int j = 0; j < _pixels.GetLength(1) - columns; j++)
+            _topLeftCorners.Clear();
+            for (int i = 0; i < _pixels.GetLength(0) - minRows; i++)
+                for (int j = 0; j < _pixels.GetLength(1) - minColumns; j++)
                 {
-                    if (CheckBlackLine(i, j, rows) && CheckBlackColumn(i, j, columns))
-                        AddLefAngel(new Position(i, j));
+                    int rows = GetBlackRows(i, j);
+                    if (rows > minRows)
+                    {
+                        int columns = GetBlackColumns(i, j);
+                        if (columns > minColumns)
+                            AddTopLeftCorner(new TopLeftCorner(i, j, rows, columns));
+                    }
                 }
         }
 
@@ -77,7 +85,7 @@ namespace ScreenShotLib
             int count = 0;
             for (int i = 0; i < _pixels.GetLength(0); i++)
                 for (int j = 0; j < _pixels.GetLength(1); j++)
-                    if (Black.N1(_pixels[i, j]) < BlackThreshold)
+                    if (IsNearBlack(i, j))
                     {
                        // Logger.Info($"({i}, {j}) => {_pixels[i, j]}");
                         count++;
@@ -99,8 +107,8 @@ namespace ScreenShotLib
         {
             var sb = new StringBuilder();
             sb.AppendLine($"H:{_pixels.GetLength(0)} x W:{_pixels.GetLength(1)}");
-            sb.AppendLine($"Top Left: {_topLeftAngels.Count}");
-            foreach (var tla in _topLeftAngels)
+            sb.AppendLine($"Top Left: {_topLeftCorners.Count}");
+            foreach (var tla in _topLeftCorners)
             {
                 sb.AppendLine($"{tla}");
             }

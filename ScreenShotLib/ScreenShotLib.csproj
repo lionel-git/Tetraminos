@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TopLeftCorner.cs" />
     <Compile Include="RawBitmap.cs" />
     <Compile Include="RGB.cs" />
     <Compile Include="ScreenShotParser.cs" />
