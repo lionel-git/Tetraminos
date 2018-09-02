@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TetraMinos2", "TetraMinos2\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenShotLib", "ScreenShotLib\ScreenShotLib.csproj", "{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{89DC6025-E64B-490D-B424-01037C963BAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89DC6025-E64B-490D-B424-01037C963BAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DC6025-E64B-490D-B424-01037C963BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DC6025-E64B-490D-B424-01037C963BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DC6025-E64B-490D-B424-01037C963BAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

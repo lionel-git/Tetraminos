@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TetraMinos2
+namespace Common
 {
     public class Position
     {
@@ -16,6 +16,11 @@ namespace TetraMinos2
 
         public int Row { get; set; }
         public int Column { get; set; }
+
+        public int N1(Position rhs)
+        {
+            return Math.Abs(Row - rhs.Row) + Math.Abs(Column - rhs.Column);
+        }
 
         public override string ToString()
         {

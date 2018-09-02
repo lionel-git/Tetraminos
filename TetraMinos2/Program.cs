@@ -118,10 +118,11 @@ namespace TetraMinos2
         {
             var screenShotParser = new ScreenShotParser();
             screenShotParser.LoadScreenShot(@"ScreenShots\Moyen205.jpg");
+           
+           // screenShotParser.SearchBlackLines();
+            screenShotParser.SearchTopLeftAngle(50, 50);
             Logger.Info(screenShotParser);
         }
-
-
 
         static void Main(string[] args)
         {

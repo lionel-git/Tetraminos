@@ -15,3 +15,6 @@
  - Trier point dans piece par complexite decroissante
  complexite basee sur voisins
 
+ class Pixel + distance
+ Checker les bordures noires + angle gauche ?
+
