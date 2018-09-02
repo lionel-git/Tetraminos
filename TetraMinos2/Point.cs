@@ -21,6 +21,14 @@ namespace TetraMinos2
         // neighboor4 + 4 on diags
         public int Neighboor8 { get; set; }
 
+        public int Complexity
+        {
+            get
+            {
+                return Neighboor4 + Neighboor8;
+            }
+        }
+
         public override string ToString()
         {
             return $"{Position} => {Neighboor4} {Neighboor8}";

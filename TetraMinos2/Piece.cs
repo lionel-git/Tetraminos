@@ -35,9 +35,9 @@ namespace TetraMinos2
         // List of points from (0,0) in the piece
         private List<Point> _points;
 
-        // Points sorted by N4
+        // List of points for a given N4
         private List<Point>[] _pointsN4;
-        // Points sorted by N8
+        // List of points for a given N8
         private List<Point>[] _pointsN8;
 
         public List<Point> Points => _points;
@@ -129,6 +129,7 @@ namespace TetraMinos2
             }
             CheckConsistency();
             ComputeDatas();
+            SortPointLists(); // At the end!!
         }
 
         public void UpdateCurrentId(int inc)
@@ -195,6 +196,20 @@ namespace TetraMinos2
                     }
             _hashCode = ComputeHashCode();
             _complexity = CalculateComplexity();
+        }
+
+        private List<Point> OrderList(List<Point> list)
+        {
+            return list.OrderByDescending(x => x.Complexity).ToList();
+        }
+
+        public void SortPointLists()
+        {
+            _points = OrderList(_points);
+            for (int i = 0; i < _pointsN4.Length; i++)
+                _pointsN4[i] = OrderList(_pointsN4[i]);
+            for (int i = 0; i < _pointsN8.Length; i++)
+                _pointsN8[i] = OrderList(_pointsN8[i]);
         }
 
         public override string ToString()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ScreenShotLib;
 
 namespace TetraMinos2
 {
@@ -113,6 +114,12 @@ namespace TetraMinos2
             board.TrySolve(pieces, true);
         }
 
+        static void Test3()
+        {
+            var screenShotParser = new ScreenShotParser();
+            screenShotParser.ParseFile(@"ScreenShots\Moyen205.jpg");
+        }
+
 
 
         static void Main(string[] args)
@@ -120,7 +127,8 @@ namespace TetraMinos2
             try
             {
                 //Test1b(); return;
-                Test2();
+                //Test2();
+                Test3();
             }
             catch (TetraMinoException e)
             {
