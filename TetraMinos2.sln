@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TetraMinos2", "TetraMinos2\TetraMinos2.csproj", "{217BE25F-5667-4C8D-95A9-D2F7B9AB1B77}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA} = {D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}
+		{89DC6025-E64B-490D-B424-01037C963BAC} = {89DC6025-E64B-490D-B424-01037C963BAC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenShotLib", "ScreenShotLib\ScreenShotLib.csproj", "{D0D9231C-9BF9-4DEE-BCBA-DB33EBEDEBDA}"
 EndProject
