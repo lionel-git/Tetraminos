@@ -24,9 +24,20 @@ namespace ScreenShotLib
 
         private string _name;
 
+        private int _squareHeight;
+        private int _squareWidth;
+
+        private List<Tuple<double, double>> _coeffs;
+
         public ScreenShotParser()
         {
             _topLeftCorners = new List<TopLeftCorner>();
+            _coeffs = new List<Tuple<double, double>>();
+            _coeffs.Add(new Tuple<double, double>(0.5, 0.5));
+            _coeffs.Add(new Tuple<double, double>(0.25, 0.25));
+            _coeffs.Add(new Tuple<double, double>(0.25, 0.75));
+            _coeffs.Add(new Tuple<double, double>(0.75, 0.25));
+            _coeffs.Add(new Tuple<double, double>(0.75, 0.75));
         }
 
         public void LoadScreenShot(string fileName, string name)
@@ -104,6 +115,58 @@ namespace ScreenShotLib
                         }
                     }
             Logger.Info($"Found: {count}");
+        }
+
+        private double Eps(int n, int b)
+        {
+            double r = n / (double)b; // Should be close to integer
+            return Math.Abs(r - (int)(r + 0.5));
+        }
+
+        private RGB GetPixel(TopLeftCorner corner, Tuple<double, double> coeffs)
+        {
+            return _pixels[(int)(corner.Position.Row + coeffs.Item1 * _squareHeight), (int)(corner.Position.Column + coeffs.Item2 * _squareWidth)];
+        }
+
+        public void GetBaseDimensions()
+        {
+            _squareHeight = int.MaxValue;
+            _squareWidth = int.MaxValue;
+            foreach (var corner in _topLeftCorners)
+            {
+                _squareHeight = Math.Min(_squareHeight, corner.Height);
+                _squareWidth = Math.Min(_squareWidth, corner.Width);
+            }
+            _squareHeight -= 1;
+            _squareWidth -= 1;
+
+            Logger.Info($"H:{_squareHeight},W:{_squareWidth}");
+
+            // Check integers
+            foreach (var corner in _topLeftCorners)
+            {
+                double epsW = Eps(corner.Width, _squareWidth);
+                if (epsW > 0.05)
+                    Logger.Info($"Bad width: {corner.Width} W:{epsW}");
+                double epsH = Eps(corner.Height, _squareHeight);
+                if (epsH > 0.05)
+                    Logger.Info($"Bad height: {corner.Height} H:{epsH}");
+            }
+
+            foreach (var corner in _topLeftCorners)
+            {
+                Logger.Info($"\n==== {corner}");
+                foreach (var coeff in _coeffs)
+                {
+                    var rgb = GetPixel(corner, coeff);
+                    rgb.Normalize();
+                    Logger.Info($"{rgb}");
+                }
+            }
+
+            // A partir d'un top left corner, chercher sur haut/bas/gauche/droite
+
+
         }
 
         public override string ToString()

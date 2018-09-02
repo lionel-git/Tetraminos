@@ -123,6 +123,7 @@ namespace TetraMinos2
                 screenShotParser.LoadScreenShot(fileName, name);
                 screenShotParser.SearchTopLeftAngle(70, 70);
                 Logger.Info(screenShotParser);
+                screenShotParser.GetBaseDimensions();
             }
         }
 

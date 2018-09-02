@@ -31,6 +31,17 @@ namespace ScreenShotLib
             return Math.Abs(_r - rhs._r) + Math.Abs(_g - rhs._g) + Math.Abs(_b - rhs._b);
         }
 
+        public void Normalize()
+        {
+            double n = _r + _g + _b;
+            if (n > 0.5)
+            {
+                _r = (byte)(255 * _r / n);
+                _g = (byte)(255 * _g / n);
+                _b = (byte)(255 * _b / n);
+            }
+        }
+
         public override string ToString()
         {
             return $"({_r},{_g},{_b})";
