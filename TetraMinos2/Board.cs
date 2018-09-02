@@ -129,7 +129,6 @@ namespace TetraMinos2
             return false;
         }
 
-        [Obsolete]
         public List<Position> SearchPositions(Piece piece)
         {
             var positions = new List<Position>();
@@ -157,7 +156,7 @@ namespace TetraMinos2
                             maxDifficulty = difficulty;
                         }
                     }
-            return position;
+            return (maxDifficulty > int.MinValue ? position : null);
         }
 
         // That pieces on the board match original list
@@ -195,7 +194,38 @@ namespace TetraMinos2
             _callsSolve++;
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"{pieces.Where(x => x.IsAvailable).Count()} pieces, solve for {ToStringDebug()}");
-            if (pieces.Count == 0)
+
+            var position = SearchMostDifficult();
+            if (position != null)
+            {
+                int maxN4C = 4 - _n4C[1 + position.Row, 1 + position.Column];
+                int maxN4D = 4 - _n4D[1 + position.Row, 1 + position.Column];
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"Choosen board position = {position} maxN4C={maxN4C} maxN4D={maxN4D}");
+                foreach (var piece in pieces)
+                {
+                    if (piece.IsAvailable)
+                    {
+                        for (int m = maxN4C; m >= 0; m--)
+                        {
+                            foreach (var point in piece.PointsN4[m])
+                            {
+                                int row = position.Row - point.Position.Row;
+                                int column = position.Column - point.Position.Column;
+                                if (row >= 0 && column >= 0 && !IsCollision(row, column, piece))
+                                {
+                                    UpdateBoard(piece, row, column, Operation.Put, true);
+                                    if (Solve(pieces) && _solveForOne)
+                                        return true;
+                                    UpdateBoard(piece, row, column, Operation.Remove, true);
+                                }
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            else
             {
                 Logger.Info($"Solution found:\n{ToString()}");
                 var message = CheckResult(pieces);
@@ -205,38 +235,6 @@ namespace TetraMinos2
                     Logger.Info($"Solution is incorrect: {message}");
                 _solutions++;
                 return true;
-            }
-            else
-            {
-                var position = SearchMostDifficult();
-                int maxN4C = 4 - _n4C[1 + position.Row, 1 + position.Column];
-                int maxN4D = 4 - _n4D[1 + position.Row, 1 + position.Column];
-                if (Logger.IsDebugEnabled)
-                    Logger.Debug($"Position = {position} maxN4C={maxN4C} maxN4D={maxN4D}");
-
-                // Iterer sur les pieces + points
-                // attention on ne peut pas iterer sur collection modifiee
-                foreach (var piece in pieces)
-                {
-                    if (piece.IsAvailable)
-                    {
-                        // Check available points de la piece avec maxN4D/maxN4C
-                        // tester par ordre decroissant maxN4D jusqu'a 0                        
-                        int rowPoint = 0;
-                        int columnPoint = 0;
-
-                        int row = position.Row + rowPoint;
-                        int column = position.Column + columnPoint;
-                        if (!IsCollision(row, column, piece))
-                        {
-                            UpdateBoard(piece, row, column, Operation.Put, true);
-                            if (Solve(pieces) && _solveForOne)
-                                return true;
-                            UpdateBoard(piece, row, column, Operation.Remove, true);
-                        }
-                    }
-                }
-                return false;
             }
         }
 

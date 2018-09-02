@@ -97,16 +97,20 @@ namespace TetraMinos2
         static void Test2()
         {
             Board board;
-            var pieces = TestLoader.LoadTest("Moyen24.txt", out board);
+            var pieces = TestLoader.LoadTest("Moyen205.txt", out board);
 
             Logger.Info(board);
             foreach (var piece in pieces)
                 Logger.Info(piece.Value.ToStringDebug());
 
+            var orderPieces = pieces.Values.OrderByDescending(x => x.Complexity);
+            foreach (var piece in orderPieces)
+                Logger.Info($"{piece.Names} => {piece.Complexity}");
+
             //board.UpdateBoard(pieces['A'], new Position(1, 0), Operation.Put, true);
 
             Logger.Info(board.ToStringDebug());
-            board.TrySolve(pieces);
+            board.TrySolve(pieces, true);
         }
 
 

@@ -11,3 +11,7 @@
  - Stats functions: Solve, Updateboard, UpdateNeigboors
  
  - Place piece : List<point>
+
+ - Trier point dans piece par complexite decroissante
+ complexite basee sur voisins
+

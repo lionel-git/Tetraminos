@@ -42,6 +42,8 @@ namespace TetraMinos2
 
         public List<Point> Points => _points;
 
+        public List<Point>[] PointsN4 => _pointsN4;
+
         private char CurrentName
         {
             get
@@ -162,10 +164,15 @@ namespace TetraMinos2
             return (Rows << 0) ^ (Columns << 8) ^ (Area << 16) ^ TabHashing.Hash(_datas);
         }
 
-#warning !!!!! To Be Done !!!!
         private double CalculateComplexity()
         {
-            return _id;
+            double diffHeightWidth = Math.Abs(Rows - Columns);
+            double maxArea = Rows * Columns;
+            double density = Math.Abs(Area / maxArea - 0.5);
+            double n3 = PointsN4[3].Count;
+
+            return  10.0 / (0.5 + density) + 2.0 * diffHeightWidth + 1.0 * maxArea;
+
         }
 
         private void ComputeDatas()
