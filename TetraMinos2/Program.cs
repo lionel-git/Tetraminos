@@ -116,12 +116,12 @@ namespace TetraMinos2
 
         static void Test3()
         {
-            foreach (var fileName in new List<string>() { "Moyen205", "Difficile35" })
+            foreach (var name in new List<string>() { "Moyen205", "Difficile35" })
             {
                 var screenShotParser = new ScreenShotParser();
-                var fullName = $@"ScreenShots\{fileName}.jpg";
-                screenShotParser.LoadScreenShot(fullName);
-                screenShotParser.SearchTopLeftAngle(50, 50);
+                var fileName = $@"ScreenShots\{name}.jpg";
+                screenShotParser.LoadScreenShot(fileName, name);
+                screenShotParser.SearchTopLeftAngle(70, 70);
                 Logger.Info(screenShotParser);
             }
         }

@@ -22,13 +22,16 @@ namespace ScreenShotLib
 
         private static readonly RGB Black = new RGB(0, 0, 0);
 
+        private string _name;
+
         public ScreenShotParser()
         {
             _topLeftCorners = new List<TopLeftCorner>();
         }
 
-        public void LoadScreenShot(string fileName)
+        public void LoadScreenShot(string fileName, string name)
         {
+            _name = name;
             var image = Image.FromFile(fileName);
             var rawBitMap = new RawBitmap(image);
             _pixels = rawBitMap.ConvertDatas();
@@ -106,7 +109,7 @@ namespace ScreenShotLib
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"H:{_pixels.GetLength(0)} x W:{_pixels.GetLength(1)}");
+            sb.AppendLine($"{_name} H:{_pixels.GetLength(0)} x W:{_pixels.GetLength(1)}");
             sb.AppendLine($"Top Left: {_topLeftCorners.Count}");
             foreach (var tla in _topLeftCorners)
             {
