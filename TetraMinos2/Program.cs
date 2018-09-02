@@ -117,7 +117,8 @@ namespace TetraMinos2
         static void Test3()
         {
             var screenShotParser = new ScreenShotParser();
-            screenShotParser.ParseFile(@"ScreenShots\Moyen205.jpg");
+            screenShotParser.LoadScreenShot(@"ScreenShots\Moyen205.jpg");
+            Logger.Info(screenShotParser);
         }
 
 
