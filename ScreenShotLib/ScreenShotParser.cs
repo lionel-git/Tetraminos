@@ -123,9 +123,30 @@ namespace ScreenShotLib
             return Math.Abs(r - (int)(r + 0.5));
         }
 
-        private RGB GetPixel(TopLeftCorner corner, Tuple<double, double> coeffs)
+        private RGB GetPixel(TopLeftCorner corner, Tuple<double, double> coeffs, int shiftSquareRows = 0, int shiftSquareColumns = 0)
         {
-            return _pixels[(int)(corner.Position.Row + coeffs.Item1 * _squareHeight), (int)(corner.Position.Column + coeffs.Item2 * _squareWidth)];
+            int row = (int)(corner.Position.Row + (shiftSquareRows + coeffs.Item1) * _squareHeight);
+            int column = (int)(corner.Position.Column + (shiftSquareColumns + coeffs.Item2) * _squareWidth);
+            if (row >= 0 && row <= _pixels.GetLength(0) && column >= 0 && column <= _pixels.GetLength(1))
+                return _pixels[row, column];
+            else
+                return null;
+        }
+
+        private int DistanceSample(TopLeftCorner corner, int squareRow, int squareColumn)
+        {
+            int distance = 0;
+            for (int i = 0; i < _coeffs.Count; i++)
+            {
+                var rgb = GetPixel(corner, _coeffs[i], squareRow, squareColumn);
+                Logger.Info($"To compare: {rgb} {corner.PixelSamples[i]}");
+                if (rgb != null)
+                    distance += corner.PixelSamples[i].N1(rgb);
+                else
+                    distance += int.MaxValue / (_coeffs.Count+1);
+            }
+            Logger.Info($"Distance {squareRow} {squareColumn} = {distance}");
+            return distance;
         }
 
         public void GetBaseDimensions()
@@ -155,18 +176,22 @@ namespace ScreenShotLib
 
             foreach (var corner in _topLeftCorners)
             {
-                Logger.Info($"\n==== {corner}");
                 foreach (var coeff in _coeffs)
                 {
                     var rgb = GetPixel(corner, coeff);
-                    rgb.Normalize();
-                    Logger.Info($"{rgb}");
+                    corner.PixelSamples.Add(rgb);
                 }
             }
 
             // A partir d'un top left corner, chercher sur haut/bas/gauche/droite
-
-
+            foreach (var corner in _topLeftCorners)
+            {
+                Logger.Info($"\n==== {corner}");
+                int distanceH = DistanceSample(corner, -1, 0);
+                int distanceB = DistanceSample(corner, +1, 0);
+                int distanceG = DistanceSample(corner, 0, -1);
+                int distanceD = DistanceSample(corner, 0, +1);
+            }
         }
 
         public override string ToString()

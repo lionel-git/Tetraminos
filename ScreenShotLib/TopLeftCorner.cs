@@ -14,9 +14,12 @@ namespace ScreenShotLib
             Position = new Position(row, column);
             Height = height;
             Width = width;
+            PixelSamples = new List<RGB>();
         }
 
         public Position Position { get; set; }
+
+        public List<RGB> PixelSamples { get; set; }
 
         public int N1(TopLeftCorner rhs) => Position.N1(rhs.Position);
 

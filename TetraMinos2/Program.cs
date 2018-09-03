@@ -116,7 +116,7 @@ namespace TetraMinos2
 
         static void Test3()
         {
-            foreach (var name in new List<string>() { "Moyen205", "Difficile35" })
+            foreach (var name in new List<string>() { "Moyen202"/*, "Difficile35"*/ })
             {
                 var screenShotParser = new ScreenShotParser();
                 var fileName = $@"ScreenShots\{name}.jpg";
