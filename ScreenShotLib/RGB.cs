@@ -12,6 +12,10 @@ namespace ScreenShotLib
         private byte _g;
         private byte _b;
 
+        public byte R => _r;
+        public byte G => _g;
+        public byte B => _b;
+
         public RGB(byte r, byte g, byte b)
         {
             _r = r;

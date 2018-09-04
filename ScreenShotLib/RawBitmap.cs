@@ -9,6 +9,8 @@ using System.Drawing.Imaging;
 
 namespace ScreenShotLib
 {
+    // Raw bmp format:
+    // https://en.wikipedia.org/wiki/BMP_file_format
     public class RawBitmap
     {
         private byte[] _datas;
@@ -20,6 +22,32 @@ namespace ScreenShotLib
                 image.Save(stream, ImageFormat.Bmp);
                 _datas = stream.ToArray();
             }
+        }
+
+        public RawBitmap(RGB[,] pixels)
+        {
+            int fileSize = 54 + 3 * pixels.GetLength(0) * pixels.GetLength(1);
+            _datas = new byte[fileSize];
+
+            SetString(0, "BM");
+            SetInt(0x02, _datas.Length);
+            SetInt(0x0A, 54);
+
+            SetInt(0x0E, 40); // 54 = 0x0E + 40
+            SetInt(0x12, pixels.GetLength(1));
+            SetInt(0x16, pixels.GetLength(0));
+
+            SetShort(0x1A, 1);
+            SetShort(0x1C, 24);
+
+            for (int i = 0; i < pixels.GetLength(0); i++) // Height
+                for (int j = 0; j < pixels.GetLength(1); j++) // Width
+                {
+                    int offset = 54 + 3 * (i * pixels.GetLength(1) + j);
+                    _datas[offset + 0] = pixels[pixels.GetLength(0) - 1 - i, j].R;
+                    _datas[offset + 1] = pixels[pixels.GetLength(0) - 1 - i, j].G;
+                    _datas[offset + 2] = pixels[pixels.GetLength(0) - 1 - i, j].B;
+                }
         }
 
         private int GetShort(int offset)
@@ -34,7 +62,29 @@ namespace ScreenShotLib
             return (int)r;
         }
 
-        //cf https://en.wikipedia.org/wiki/BMP_file_format
+        private void SetInt(int offset, int value)
+        {
+            for (int i = 0; i < 4; i++)
+                _datas[offset + i] = (byte)((value >> (8 * i)) & 0xFF);
+        }
+
+        private void SetShort(int offset, short value)
+        {
+            for (int i = 0; i < 2; i++)
+                _datas[offset + i] = (byte)((value >> (8 * i)) & 0xFF);
+        }
+
+        private void SetString(int offset, string value)
+        {
+            for (int i = 0; i < value.Length; i++)
+                _datas[offset + i] = (byte)value[i];
+        }
+
+        public void SaveToBmpFile(string fileName)
+        {
+            File.WriteAllBytes(fileName, _datas);
+        }
+
         public RGB[,] ConvertDatas()
         {
             string type = $"{(char)_datas[0]}{(char)_datas[1]}";

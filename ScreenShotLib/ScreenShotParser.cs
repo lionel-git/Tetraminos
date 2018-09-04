@@ -48,6 +48,13 @@ namespace ScreenShotLib
             _pixels = rawBitMap.ConvertDatas();
         }
 
+        public void SaveScreenShot(string fileName)
+        {
+            Logger.Info($"Saving to bmp file: {fileName}");
+            var rawBitMap = new RawBitmap(_pixels);
+            rawBitMap.SaveToBmpFile(fileName);
+        }
+
         private bool IsNearBlack(int i, int j)
         {
             return Black.N1(_pixels[i, j]) <= 3 * 18;

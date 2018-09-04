@@ -127,13 +127,22 @@ namespace TetraMinos2
             }
         }
 
+        static void Test4()
+        {
+                var screenShotParser = new ScreenShotParser();
+                var fileName = $@"ScreenShots\Moyen202.jpg";
+                screenShotParser.LoadScreenShot(fileName, "Moyen202");
+                screenShotParser.SaveScreenShot(@"c:\tmp\M202.bmp");
+        }
+
         static void Main(string[] args)
         {
             try
             {
                 //Test1b(); return;
                 //Test2();
-                Test3();
+                // Test3();
+                Test4();
             }
             catch (TetraMinoException e)
             {
