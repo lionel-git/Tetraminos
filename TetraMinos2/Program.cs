@@ -141,8 +141,8 @@ namespace TetraMinos2
             {
                 //Test1b(); return;
                 //Test2();
-                // Test3();
-                Test4();
+                 Test3();
+              //  Test4();
             }
             catch (TetraMinoException e)
             {

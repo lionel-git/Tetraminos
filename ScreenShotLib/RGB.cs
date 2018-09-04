@@ -25,9 +25,9 @@ namespace ScreenShotLib
 
         public RGB(byte[] datas, int offset)
         {
-            _r = datas[offset + 0];
+            _b = datas[offset + 0];
             _g = datas[offset + 1];
-            _b = datas[offset + 2];
+            _r = datas[offset + 2];
         }
 
         public int N1(RGB rhs)

@@ -44,9 +44,9 @@ namespace ScreenShotLib
                 for (int j = 0; j < pixels.GetLength(1); j++) // Width
                 {
                     int offset = 54 + 3 * (i * pixels.GetLength(1) + j);
-                    _datas[offset + 0] = pixels[pixels.GetLength(0) - 1 - i, j].R;
+                    _datas[offset + 0] = pixels[pixels.GetLength(0) - 1 - i, j].B;
                     _datas[offset + 1] = pixels[pixels.GetLength(0) - 1 - i, j].G;
-                    _datas[offset + 2] = pixels[pixels.GetLength(0) - 1 - i, j].B;
+                    _datas[offset + 2] = pixels[pixels.GetLength(0) - 1 - i, j].R;
                 }
         }
 

@@ -140,6 +140,21 @@ namespace ScreenShotLib
                 return null;
         }
 
+        private void SetPixels(TopLeftCorner corner, RGB rgb, int shiftSquareRows = 0, int shiftSquareColumns = 0)
+        {
+            int row = (int)(corner.Position.Row + (shiftSquareRows + 0) * _squareHeight);
+            int column = (int)(corner.Position.Column + (shiftSquareColumns + 0) * _squareWidth);
+
+            for (int i = 0; i < _squareHeight; i++)
+            {
+                if (row + i >= 0 && row + i <= _pixels.GetLength(0) && column + i >= 0 && column + i <= _pixels.GetLength(1))
+                {
+                    _pixels[row + i, column + i] = rgb;
+                    _pixels[row + i, column + _squareWidth - i] = rgb;
+                }
+            }
+        }
+
         private int DistanceSample(TopLeftCorner corner, int squareRow, int squareColumn)
         {
             int distance = 0;
@@ -199,6 +214,11 @@ namespace ScreenShotLib
                 int distanceG = DistanceSample(corner, 0, -1);
                 int distanceD = DistanceSample(corner, 0, +1);
             }
+
+            // Debug
+            foreach (var corner in _topLeftCorners)
+                SetPixels(corner, new RGB(255, 0, 0));
+            SaveScreenShot($@"c:\tmp\test_{_name}.bmp");
         }
 
         public override string ToString()
