@@ -26,6 +26,8 @@ namespace ScreenShotLib
         public int Height { get; set; }
         public int Width { get; set; }
 
+        public List<Position> SquarePositions { get; set; }
+
         public override string ToString()
         {
             return $"{Position} (H:{Height} W:{Width})";

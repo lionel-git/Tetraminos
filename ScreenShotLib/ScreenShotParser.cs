@@ -29,15 +29,20 @@ namespace ScreenShotLib
 
         private List<Tuple<double, double>> _coeffs;
 
+        private List<Position> _neighBoors;
+
         public ScreenShotParser()
         {
             _topLeftCorners = new List<TopLeftCorner>();
             _coeffs = new List<Tuple<double, double>>();
-            _coeffs.Add(new Tuple<double, double>(0.5, 0.5));
-            _coeffs.Add(new Tuple<double, double>(0.25, 0.25));
-            _coeffs.Add(new Tuple<double, double>(0.25, 0.75));
-            _coeffs.Add(new Tuple<double, double>(0.75, 0.25));
-            _coeffs.Add(new Tuple<double, double>(0.75, 0.75));
+            for (double r = 0.1; r < 0.91; r += 0.1)
+                for (double c = 0.1; c < 0.91; c += 0.1)
+                    _coeffs.Add(new Tuple<double, double>(r, c));
+            _neighBoors = new List<Position>();
+            _neighBoors.Add(new Position(-1, 0));
+            _neighBoors.Add(new Position(+1, 0));
+            _neighBoors.Add(new Position(0, -1));
+            _neighBoors.Add(new Position(0, +1));
         }
 
         public void LoadScreenShot(string fileName, string name)
@@ -140,10 +145,10 @@ namespace ScreenShotLib
                 return null;
         }
 
-        private void SetPixels(TopLeftCorner corner, RGB rgb, int shiftSquareRows = 0, int shiftSquareColumns = 0)
+        private void SetPixels(TopLeftCorner corner, RGB rgb, Position squarePosition)
         {
-            int row = (int)(corner.Position.Row + (shiftSquareRows + 0) * _squareHeight);
-            int column = (int)(corner.Position.Column + (shiftSquareColumns + 0) * _squareWidth);
+            int row = (int)(corner.Position.Row + squarePosition.Row * _squareHeight);
+            int column = (int)(corner.Position.Column + squarePosition.Column * _squareWidth);
 
             for (int i = 0; i < _squareHeight; i++)
             {
@@ -155,19 +160,19 @@ namespace ScreenShotLib
             }
         }
 
-        private int DistanceSample(TopLeftCorner corner, int squareRow, int squareColumn)
+        private int DistanceSample(TopLeftCorner corner, Position squarePos)
         {
             int distance = 0;
             for (int i = 0; i < _coeffs.Count; i++)
             {
-                var rgb = GetPixel(corner, _coeffs[i], squareRow, squareColumn);
-                Logger.Info($"To compare: {rgb} {corner.PixelSamples[i]}");
+                var rgb = GetPixel(corner, _coeffs[i], squarePos.Row, squarePos.Column);
+//                Logger.Info($"To compare: {rgb} {corner.PixelSamples[i]}");
                 if (rgb != null)
                     distance += corner.PixelSamples[i].N1(rgb);
                 else
                     distance += int.MaxValue / (_coeffs.Count+1);
             }
-            Logger.Info($"Distance {squareRow} {squareColumn} = {distance}");
+            Logger.Info($"Distance {squarePos.Row} {squarePos.Column} = {distance}");
             return distance;
         }
 
@@ -205,19 +210,35 @@ namespace ScreenShotLib
                 }
             }
 
+
             // A partir d'un top left corner, chercher sur haut/bas/gauche/droite
             foreach (var corner in _topLeftCorners)
             {
                 Logger.Info($"\n==== {corner}");
-                int distanceH = DistanceSample(corner, -1, 0);
-                int distanceB = DistanceSample(corner, +1, 0);
-                int distanceG = DistanceSample(corner, 0, -1);
-                int distanceD = DistanceSample(corner, 0, +1);
+                var positions = new Dictionary<Position, bool>();
+                positions.Add(new Position(0, 0), true);
+                var newPositions = new Dictionary<Position, bool>();
+                foreach (var position in positions)
+                {
+                    foreach (var neighBoor in _neighBoors)
+                    {
+                        var testPosition = position.Key + neighBoor;
+                        if (DistanceSample(corner, testPosition) < 10 * _coeffs.Count)
+                            newPositions.Add(testPosition, true);
+                    }
+                }
+                corner.SquarePositions = newPositions.Keys.ToList();
             }
 
             // Debug
             foreach (var corner in _topLeftCorners)
-                SetPixels(corner, new RGB(255, 0, 0));
+            {
+                SetPixels(corner, new RGB(255, 0, 0), new Position(0,0));
+                foreach (var squarePosition in corner.SquarePositions)
+                {
+                    SetPixels(corner, new RGB(0, 0, 255), squarePosition);
+                }
+            }
             SaveScreenShot($@"c:\tmp\test_{_name}.bmp");
         }
 

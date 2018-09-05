@@ -22,6 +22,11 @@ namespace Common
             return Math.Abs(Row - rhs.Row) + Math.Abs(Column - rhs.Column);
         }
 
+        public static Position operator +(Position p1, Position p2)
+        {
+            return new Position(p1.Row + p2.Row, p1.Column + p2.Column);
+        }
+
         public override string ToString()
         {
             return $"({Row},{Column})";
