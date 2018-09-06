@@ -30,7 +30,12 @@ namespace ScreenShotLib
 
         public override string ToString()
         {
-            return $"{Position} (H:{Height} W:{Width})";
+            var sb = new StringBuilder();
+            sb.Append($"{Position} (H:{Height} W:{Width}) ");
+            if (SquarePositions != null)
+                foreach (var sp in SquarePositions)
+                    sb.Append(sp);
+            return sb.ToString();
         }
     }
 }

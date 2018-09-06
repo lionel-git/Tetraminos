@@ -215,24 +215,44 @@ namespace ScreenShotLib
             foreach (var corner in _topLeftCorners)
             {
                 Logger.Info($"\n==== {corner}");
+
                 var positions = new Dictionary<Position, bool>();
                 positions.Add(new Position(0, 0), true);
-                var newPositions = new Dictionary<Position, bool>();
-                foreach (var position in positions)
+
+                bool newPositionFound = false;
+                do
                 {
-                    foreach (var neighBoor in _neighBoors)
+                    var newPositions = new Dictionary<Position, bool>();
+                    foreach (var position in positions)
                     {
-                        var testPosition = position.Key + neighBoor;
-                        if (DistanceSample(corner, testPosition) < 10 * _coeffs.Count)
-                            newPositions.Add(testPosition, true);
+                        foreach (var neighBoor in _neighBoors)
+                        {
+                            var testPosition = position.Key + neighBoor;
+                            if (DistanceSample(corner, testPosition) < 25 * _coeffs.Count)
+                                if (!newPositions.ContainsKey(testPosition))
+                                    newPositions.Add(testPosition, true);
+                        }
+                    }
+
+                    //Report new positions
+                    newPositionFound = false;
+                    foreach (var newPosition in newPositions)
+                    {
+                        if (!positions.ContainsKey(newPosition.Key))
+                        {
+                            positions.Add(newPosition.Key, true);
+                            newPositionFound = true;
+                        }
                     }
                 }
-                corner.SquarePositions = newPositions.Keys.ToList();
+                while (newPositionFound);
+                corner.SquarePositions = positions.Keys.ToList();
             }
 
             // Debug
             foreach (var corner in _topLeftCorners)
             {
+                Logger.Info($"Corner: {corner}");
                 SetPixels(corner, new RGB(255, 0, 0), new Position(0,0));
                 foreach (var squarePosition in corner.SquarePositions)
                 {

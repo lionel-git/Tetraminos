@@ -85,18 +85,18 @@ namespace TetraMinos2
                 return 0;
         }
 
-        public override bool Equals(object piece)
+        public override bool Equals(object obj)
         {
-            var rhs = piece as Piece;
+            var piece = obj as Piece;
             if (piece == null)
-                throw new Exception($"Invalid comparison of piece with type: '{rhs.GetType()}'");
+                throw new Exception($"Invalid comparison of type '{GetType()}' with type: '{obj.GetType()}'");
 
-            if (GetHashCode() != rhs.GetHashCode())
+            if (GetHashCode() != piece.GetHashCode())
                 return false;
 
             for (int i = 0; i < Rows; i++)
                 for (int j = 0; j < Columns; j++)
-                    if (CheckPos(i, j) != rhs.CheckPos(i, j))
+                    if (CheckPos(i, j) != piece.CheckPos(i, j))
                         return false;
 
             return true;

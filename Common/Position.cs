@@ -27,6 +27,20 @@ namespace Common
             return new Position(p1.Row + p2.Row, p1.Column + p2.Column);
         }
 
+        public override int GetHashCode()
+        {
+            UInt64 data = (UInt64)Row + (((UInt64)Column) << 32);
+            return data.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var position = obj as Position;
+            if (position == null)
+                throw new Exception($"Invalid comparison of type '{GetType()}' with type: '{obj.GetType()}'");
+            return Row == position.Row && Column == position.Column;
+        }
+
         public override string ToString()
         {
             return $"({Row},{Column})";
