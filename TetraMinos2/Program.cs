@@ -135,6 +135,14 @@ namespace TetraMinos2
                 screenShotParser.SaveScreenShot(@"c:\tmp\M202.bmp");
         }
 
+        static void Test5()
+        {
+            var piece = new Piece(1,1,1,1);
+            // Test throw
+            piece.Equals(new Dictionary<int, int>());
+
+        }
+
         static void Main(string[] args)
         {
             try
@@ -142,7 +150,9 @@ namespace TetraMinos2
                 //Test1b(); return;
                 //Test2();
                  Test3();
-              //  Test4();
+                //  Test4();
+
+                //Test5();
             }
             catch (TetraMinoException e)
             {

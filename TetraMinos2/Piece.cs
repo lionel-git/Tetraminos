@@ -89,7 +89,7 @@ namespace TetraMinos2
         {
             var piece = obj as Piece;
             if (piece == null)
-                throw new Exception($"Invalid comparison of type '{GetType()}' with type: '{obj.GetType()}'");
+                throw new CompareException(this, obj);
 
             if (GetHashCode() != piece.GetHashCode())
                 return false;

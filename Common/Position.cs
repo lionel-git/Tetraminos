@@ -37,7 +37,7 @@ namespace Common
         {
             var position = obj as Position;
             if (position == null)
-                throw new Exception($"Invalid comparison of type '{GetType()}' with type: '{obj.GetType()}'");
+                throw new CompareException(this, obj);
             return Row == position.Row && Column == position.Column;
         }
 
