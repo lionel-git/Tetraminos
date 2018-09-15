@@ -180,8 +180,8 @@ namespace TetraMinos2
         private void ComputeDatas()
         {
             _points = new List<Point>();
-            _pointsN4 = Helpers.InitAList(Point.N4Size);
-            _pointsN8 = Helpers.InitAList(Point.N8Size);
+            _pointsN4 = Helpers.InitArrayList<Point>(Point.N4Size);
+            _pointsN8 = Helpers.InitArrayList<Point>(Point.N8Size);
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
                     if (this[i, j])

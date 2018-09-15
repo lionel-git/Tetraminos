@@ -270,6 +270,24 @@ namespace ScreenShotLib
             SaveScreenShot($@"c:\tmp\test_{_name}.bmp");
         }
 
+        public void SavePieces(string fileName)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"#Test from screenshot {_name}");
+            sb.AppendLine($"Board,10,10");
+            sb.AppendLine($"Name,A");
+
+            foreach (var corner in _topLeftCorners)
+            {
+                Logger.Info($"Corner: {corner}");
+                var data = corner.SquaresString();
+                if (!string.IsNullOrEmpty(data))
+                    sb.AppendLine($"Piece,1,{data}");
+            }
+            Logger.Info($"Saving to file {fileName}");
+            File.WriteAllText(fileName, sb.ToString());
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

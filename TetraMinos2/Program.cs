@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ScreenShotLib;
+using Common;
 
 namespace TetraMinos2
 {
@@ -124,6 +125,7 @@ namespace TetraMinos2
                 screenShotParser.SearchTopLeftAngle(70, 70);
                 Logger.Info(screenShotParser);
                 screenShotParser.GetBaseDimensions();
+                screenShotParser.SavePieces(@"Tests\testMoyen202.txt");
             }
         }
 
@@ -143,13 +145,24 @@ namespace TetraMinos2
 
         }
 
-        static void Main(string[] args)
+        static void Test6()
+        {
+            Board board;
+            var pieces = TestLoader.LoadTest("testMoyen202.txt", out board);
+
+            Logger.Info(board);
+            foreach (var piece in pieces)
+                Logger.Info(piece.Value.ToStringDebug());
+        }
+
+            static void Main(string[] args)
         {
             try
             {
                 //Test1b(); return;
                 //Test2();
-                 Test3();
+                Test3();
+                 Test6();
                 //  Test4();
 
                 //Test5();

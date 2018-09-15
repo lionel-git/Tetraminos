@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TetraMinos2
+namespace Common
 {
     public static class Helpers
     {
@@ -17,11 +17,11 @@ namespace TetraMinos2
             return sb.ToString();
         }
 
-        public static List<Point>[] InitAList(int n)
+        public static List<T>[] InitArrayList<T>(int n)
         {
-            var arrayList = new List<Point>[n];
+            var arrayList = new List<T>[n];
             for (int i = 0; i < arrayList.Length; i++)
-                arrayList[i] = new List<Point>();
+                arrayList[i] = new List<T>();
             return arrayList;
         }
 

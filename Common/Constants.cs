@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TetraMinos2
+namespace Common
 {
     public static class Constants
     {
@@ -25,6 +25,11 @@ namespace TetraMinos2
                 default:
                     return char.ConvertFromUtf32(v);
             }
+        }
+
+        public static string ConvertBool(bool b)
+        {
+            return (b ? On : Off);
         }
     }
 }
