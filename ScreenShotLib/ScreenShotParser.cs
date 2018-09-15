@@ -20,8 +20,6 @@ namespace ScreenShotLib
 
         private List<TopLeftCorner> _topLeftCorners;
 
-        private static readonly RGB Black = new RGB(0, 0, 0);
-
         private string _name;
 
         private int _squareHeight;
@@ -60,15 +58,26 @@ namespace ScreenShotLib
             rawBitMap.SaveToBmpFile(fileName);
         }
 
-        private bool IsNearBlack(int i, int j)
+        private bool IsNearGrey(int i, int j, bool relative = false)
         {
-            return Black.N1(_pixels[i, j]) <= 3 * 18;
+            var p = _pixels[i, j];
+            int d = Math.Abs(p.R - p.G) + Math.Abs(p.G - p.B) + Math.Abs(p.B - p.R);
+            if (relative)
+            {
+                double sum = (double)p.R + (double)p.G + (double)p.B;
+                if (sum < 0.5)
+                    return true;
+                else
+                    return d / sum <= 15.0 / (3.0 * 128.0);
+            }
+            else
+                return d <= 8;
         }
 
         private int GetBlackRows(int i, int j)
         {
             int k = 0;
-            while (i + k < _pixels.GetLength(0) && IsNearBlack(i + k, j))
+            while (i + k < _pixels.GetLength(0) && IsNearGrey(i + k, j))
                 k++;
             return k;
         }
@@ -76,7 +85,7 @@ namespace ScreenShotLib
         private int GetBlackColumns(int i, int j)
         {
             int k = 0;
-            while (j + k < _pixels.GetLength(1) && IsNearBlack(i, j + k))
+            while (j + k < _pixels.GetLength(1) && IsNearGrey(i, j + k))
                 k++;
             return k;
         }
@@ -111,9 +120,8 @@ namespace ScreenShotLib
             int count = 0;
             for (int i = 0; i < _pixels.GetLength(0); i++)
                 for (int j = 0; j < _pixels.GetLength(1); j++)
-                    if (IsNearBlack(i, j))
+                    if (IsNearGrey(i, j))
                     {
-                       // Logger.Info($"({i}, {j}) => {_pixels[i, j]}");
                         count++;
                         if (startColumn == -1)
                             startColumn = j;
