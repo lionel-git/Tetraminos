@@ -18,3 +18,9 @@
  class Pixel + distance
  Checker les bordures noires + angle gauche ?
 
+ Avant de checker un topleft, 
+ 
+ verifier si le point n'est pas sur un lige deja trouve
+ si sur ligne verticale, ne checker que ligne horizontale (et inverse)
+ (x,y) => x ~ pos.x et pos.y < y < pos.y + Ly ou pareil en inversant (x,y)
+ Comparaison avec Width/2

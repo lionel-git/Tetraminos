@@ -10,13 +10,12 @@ namespace ScreenShotLib
     public class TopLeftCorner
     {
         public Position Position { get; set; }
+        public int Height { get; set; }
+        public int Width { get; set; }
 
         public List<RGB> PixelSamples { get; set; }
 
         public int N1(TopLeftCorner rhs) => Position.N1(rhs.Position);
-
-        public int Height { get; set; }
-        public int Width { get; set; }
 
         public List<Position> SquarePositions { get; set; }
 

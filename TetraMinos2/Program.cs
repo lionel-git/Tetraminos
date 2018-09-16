@@ -115,18 +115,15 @@ namespace TetraMinos2
             board.TrySolve(pieces, true);
         }
 
-        static void Test3()
+        static void Test3(string name)
         {
-            foreach (var name in new List<string>() { "Moyen202b"/*, "Difficile35"*/ })
-            {
                 var screenShotParser = new ScreenShotParser();
                 var fileName = $@"ScreenShots\{name}.jpg";
                 screenShotParser.LoadScreenShot(fileName, name);
                 screenShotParser.SearchTopLeftAngle(70, 70);
                 Logger.Info(screenShotParser);
                 screenShotParser.GetBaseDimensions();
-                screenShotParser.SavePieces(@"Tests\testMoyen202.txt");
-            }
+                screenShotParser.SavePieces($@"Tests\generated_{name}.txt");
         }
 
         static void Test4()
@@ -145,11 +142,10 @@ namespace TetraMinos2
 
         }
 
-        static void Test6()
+        static void Test6(string name)
         {
             Board board;
-            var pieces = TestLoader.LoadTest("testMoyen202.txt", out board);
-
+            var pieces = TestLoader.LoadTest($"generated_{name}.txt", out board);
             Logger.Info(board);
             foreach (var piece in pieces)
                 Logger.Info(piece.Value.ToString());
@@ -161,8 +157,9 @@ namespace TetraMinos2
             {
                 //Test1b(); return;
                 //Test2();
-                Test3();
-                 Test6();
+                var name = "Moyen202b";
+                Test3(name);
+                 Test6(name);
                 //  Test4();
 
                 //Test5();

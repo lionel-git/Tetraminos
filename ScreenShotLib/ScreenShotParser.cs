@@ -76,7 +76,7 @@ namespace ScreenShotLib
                     return d / sum <= 15.0 / (3.0 * 128.0);
             }
             else
-                return (d <= 8 && sum<=90.0);
+                return (d <= 8 && sum <= 90.0);
         }
 
         private int GetBlackRows(int i, int j)
@@ -103,18 +103,56 @@ namespace ScreenShotLib
             _topLeftCorners.Add(newCorner);
         }
 
+        // If point(i,j) is on a line already found
+        // return:
+        // vertical line => rows below point
+        // horizontal line => columns on right
+        // on corner, both
+        private void CheckOnPreviousLine(int i, int j, out int rows, out int columns)
+        {
+            rows = 0;
+            columns = 0;
+            foreach (var corner in _topLeftCorners)
+            {
+                if (Math.Abs(i - corner.Position.Row) < 10)
+                    columns = corner.Position.Column + corner.Width - j;
+                if (Math.Abs(j - corner.Position.Column) < 10)
+                    rows = corner.Position.Row + corner.Height - i;
+                if (columns != 0 || rows != 0)
+                    return;
+            }
+        }
+
+
         public void SearchTopLeftAngle(int minRows, int minColumns)
         {
             _topLeftCorners.Clear();
             for (int i = 0; i < _pixels.GetLength(0) - minRows; i++)
                 for (int j = 0; j < _pixels.GetLength(1) - minColumns; j++)
                 {
-                    int rows = GetBlackRows(i, j);
-                    if (rows > minRows)
+                    int rows, columns;
+                    CheckOnPreviousLine(i, j, out rows, out columns);
+                    if (rows <= minRows && columns > minColumns)
                     {
-                        int columns = GetBlackColumns(i, j);
+                        rows = GetBlackRows(i, j);
+                        if (rows > minRows)
+                            AddTopLeftCorner(new TopLeftCorner(i, j, rows, columns));
+                    }
+                    else if (rows > minRows && columns <= minColumns)
+                    {
+                        columns = GetBlackColumns(i, j);
                         if (columns > minColumns)
                             AddTopLeftCorner(new TopLeftCorner(i, j, rows, columns));
+                    }
+                    else if (rows <= minRows && columns <= minColumns)
+                    {
+                        rows = GetBlackRows(i, j);
+                        if (rows > minRows)
+                        {
+                            columns = GetBlackColumns(i, j);
+                            if (columns > minColumns)
+                                AddTopLeftCorner(new TopLeftCorner(i, j, rows, columns));
+                        }
                     }
                 }
         }
@@ -179,11 +217,11 @@ namespace ScreenShotLib
             for (int i = 0; i < _coeffs.Count; i++)
             {
                 var rgb = GetPixel(corner, _coeffs[i], squarePos.Row, squarePos.Column);
-//                Logger.Info($"To compare: {rgb} {corner.PixelSamples[i]}");
+                //                Logger.Info($"To compare: {rgb} {corner.PixelSamples[i]}");
                 if (rgb != null)
                     distance += corner.PixelSamples[i].N1(rgb);
                 else
-                    distance += int.MaxValue / (_coeffs.Count+1);
+                    distance += int.MaxValue / (_coeffs.Count + 1);
             }
             Logger.Info($"Distance {squarePos.Row} {squarePos.Column} = {distance}");
             return distance;
@@ -269,9 +307,17 @@ namespace ScreenShotLib
                 Logger.Info($"Corner: {corner}");
                 if (!corner.BackGround)
                 {
-                    SetPixels(corner, new RGB(255, 0, 0), new Position(0, 0));
                     foreach (var squarePosition in corner.SquarePositions)
                         SetPixels(corner, new RGB(0, 0, 255), squarePosition);
+                    SetPixels(corner, new RGB(255, 0, 0), new Position(0, 0));
+
+                }
+                // Debug
+                if (corner.BackGround)
+                {
+                    foreach (var squarePosition in corner.SquarePositions)
+                        SetPixels(corner, new RGB(0, 255, 255), squarePosition);
+                    SetPixels(corner, new RGB(255, 255, 0), new Position(0, 0));
                 }
             }
             SaveScreenShot($@"c:\tmp\test_{_name}.bmp");
