@@ -67,16 +67,16 @@ namespace ScreenShotLib
         {
             var p = _pixels[i, j];
             int d = Math.Abs(p.R - p.G) + Math.Abs(p.G - p.B) + Math.Abs(p.B - p.R);
+            double sum = (double)p.R + (double)p.G + (double)p.B;
             if (relative)
             {
-                double sum = (double)p.R + (double)p.G + (double)p.B;
                 if (sum < 0.5)
                     return true;
                 else
                     return d / sum <= 15.0 / (3.0 * 128.0);
             }
             else
-                return d <= 8;
+                return (d <= 8 && sum<=90.0);
         }
 
         private int GetBlackRows(int i, int j)
