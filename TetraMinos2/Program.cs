@@ -155,6 +155,7 @@ namespace TetraMinos2
         {
             try
             {
+                Logger.Info("Start");
                 //Test1b(); return;
                 //Test2();
                 var name = "Moyen202b";

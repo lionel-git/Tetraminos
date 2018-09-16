@@ -24,3 +24,9 @@
  si sur ligne verticale, ne checker que ligne horizontale (et inverse)
  (x,y) => x ~ pos.x et pos.y < y < pos.y + Ly ou pareil en inversant (x,y)
  Comparaison avec Width/2
+
+ Detecter double corner sur meme piece
+ Ex:
+ .X
+ XX
+
