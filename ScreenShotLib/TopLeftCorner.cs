@@ -9,14 +9,6 @@ namespace ScreenShotLib
 {
     public class TopLeftCorner
     {
-        public TopLeftCorner(int row, int column, int height = 0, int width = 0)
-        {
-            Position = new Position(row, column);
-            Height = height;
-            Width = width;
-            PixelSamples = new List<RGB>();
-        }
-
         public Position Position { get; set; }
 
         public List<RGB> PixelSamples { get; set; }
@@ -28,10 +20,20 @@ namespace ScreenShotLib
 
         public List<Position> SquarePositions { get; set; }
 
+        public bool BackGround { get; set; }
+
+        public TopLeftCorner(int row, int column, int height = 0, int width = 0)
+        {
+            Position = new Position(row, column);
+            Height = height;
+            Width = width;
+            PixelSamples = new List<RGB>();
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"{Position} (H:{Height} W:{Width}) ");
+            sb.Append($"{Position} (H:{Height} W:{Width} C:{GetAverageColor()} B:{BackGround}) ");
             if (SquarePositions != null)
                 foreach (var sp in SquarePositions)
                     sb.Append(sp);
@@ -52,6 +54,21 @@ namespace ScreenShotLib
             }
             else
                 return null;
+        }
+
+        public RGB GetAverageColor()
+        {
+            double r=0.0, g=0.0, b=0.0;
+            foreach (var pixel in PixelSamples)
+            {
+                r += pixel.R;
+                g += pixel.G;
+                b += pixel.B;
+            }
+            r /= PixelSamples.Count;
+            g /= PixelSamples.Count;
+            b /= PixelSamples.Count;
+            return new RGB((byte)(r+0.5), (byte)(g +0.5), (byte)(b +0.5)).Normalize();
         }
     }
 }

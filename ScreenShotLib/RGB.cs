@@ -35,15 +35,13 @@ namespace ScreenShotLib
             return Math.Abs(_r - rhs._r) + Math.Abs(_g - rhs._g) + Math.Abs(_b - rhs._b);
         }
 
-        public void Normalize()
+        public RGB Normalize()
         {
             double n = _r + _g + _b;
             if (n > 0.5)
-            {
-                _r = (byte)(255 * _r / n);
-                _g = (byte)(255 * _g / n);
-                _b = (byte)(255 * _b / n);
-            }
+                return new RGB((byte)(255 * _r / n), (byte)(255 * _g / n), (byte)(255 * _b / n));
+            else
+                return null;
         }
 
         public override string ToString()

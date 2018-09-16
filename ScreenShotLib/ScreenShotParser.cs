@@ -29,6 +29,8 @@ namespace ScreenShotLib
 
         private List<Position> _neighBoors;
 
+        private RGB _backGround;
+
         public ScreenShotParser()
         {
             _topLeftCorners = new List<TopLeftCorner>();
@@ -36,11 +38,14 @@ namespace ScreenShotLib
             for (double r = 0.1; r < 0.91; r += 0.1)
                 for (double c = 0.1; c < 0.91; c += 0.1)
                     _coeffs.Add(new Tuple<double, double>(r, c));
-            _neighBoors = new List<Position>();
-            _neighBoors.Add(new Position(-1, 0));
-            _neighBoors.Add(new Position(+1, 0));
-            _neighBoors.Add(new Position(0, -1));
-            _neighBoors.Add(new Position(0, +1));
+            _neighBoors = new List<Position>
+            {
+                new Position(-1, 0),
+                new Position(+1, 0),
+                new Position(0, -1),
+                new Position(0, +1)
+            };
+            _backGround = new RGB(104, 92, 57);
         }
 
         public void LoadScreenShot(string fileName, string name)
@@ -216,8 +221,9 @@ namespace ScreenShotLib
                     var rgb = GetPixel(corner, coeff);
                     corner.PixelSamples.Add(rgb);
                 }
+                if (corner.GetAverageColor().N1(_backGround) < 20)
+                    corner.BackGround = true;
             }
-
 
             // A partir d'un top left corner, chercher sur haut/bas/gauche/droite
             foreach (var corner in _topLeftCorners)
@@ -261,10 +267,11 @@ namespace ScreenShotLib
             foreach (var corner in _topLeftCorners)
             {
                 Logger.Info($"Corner: {corner}");
-                SetPixels(corner, new RGB(255, 0, 0), new Position(0,0));
-                foreach (var squarePosition in corner.SquarePositions)
+                if (!corner.BackGround)
                 {
-                    SetPixels(corner, new RGB(0, 0, 255), squarePosition);
+                    SetPixels(corner, new RGB(255, 0, 0), new Position(0, 0));
+                    foreach (var squarePosition in corner.SquarePositions)
+                        SetPixels(corner, new RGB(0, 0, 255), squarePosition);
                 }
             }
             SaveScreenShot($@"c:\tmp\test_{_name}.bmp");
@@ -280,9 +287,12 @@ namespace ScreenShotLib
             foreach (var corner in _topLeftCorners)
             {
                 Logger.Info($"Corner: {corner}");
-                var data = corner.SquaresString();
-                if (!string.IsNullOrEmpty(data))
-                    sb.AppendLine($"Piece,1,{data}");
+                if (!corner.BackGround)
+                {
+                    var data = corner.SquaresString();
+                    if (!string.IsNullOrEmpty(data))
+                        sb.AppendLine($"Piece,1,{data}");
+                }
             }
             Logger.Info($"Saving to file {fileName}");
             File.WriteAllText(fileName, sb.ToString());
