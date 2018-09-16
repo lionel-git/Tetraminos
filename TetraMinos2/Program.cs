@@ -152,7 +152,7 @@ namespace TetraMinos2
 
             Logger.Info(board);
             foreach (var piece in pieces)
-                Logger.Info(piece.Value.ToStringDebug());
+                Logger.Info(piece.Value.ToString());
         }
 
             static void Main(string[] args)

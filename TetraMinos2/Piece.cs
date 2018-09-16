@@ -53,8 +53,6 @@ namespace TetraMinos2
             }
         }
 
-        public const char FlagOn = 'X';
-
         public string Names
         {
             get
@@ -115,7 +113,7 @@ namespace TetraMinos2
             _columns = columns;
             _occurences = occurences;
             _current = 0;
-            _datas = Helpers.InitArray(_rows, _columns, true);
+            _datas = Helpers.InitArrayD2(_rows, _columns, true);
             if (!string.IsNullOrEmpty(datas))
             {
                 if (datas.Length != Rows * Columns)
@@ -123,7 +121,7 @@ namespace TetraMinos2
                 int k = 0;
                 for (int i = 0; i < _rows; i++)
                     for (int j = 0; j < _columns; j++)
-                        if (datas[k++] == FlagOn)
+                        if (datas[k++] == Constants.FlagOn)
                             _datas[i, j] = true;
                         else
                             _datas[i, j] = false;
@@ -213,6 +211,13 @@ namespace TetraMinos2
                 _pointsN8[i] = OrderList(_pointsN8[i]);
         }
 
+        public static Piece GeneratePiece(int id, List<Position> positions)
+        {
+            int rows, columns;
+            var datas = Helpers.GenerateDatas(positions, out rows, out columns);
+            return new Piece(id, 1, rows, columns, datas);
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -247,7 +252,5 @@ namespace TetraMinos2
             }
             return sb.ToString();
         }
-
-
     }
 }

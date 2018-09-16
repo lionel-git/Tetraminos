@@ -14,6 +14,9 @@ namespace Common
         public const string On = "X";
         public const string Off = ".";
 
+        public const char FlagOn = 'X';
+        public const char FlagOff = '.';
+
         public static string ConvertCell(int v)
         {
             switch (v)
@@ -25,11 +28,6 @@ namespace Common
                 default:
                     return char.ConvertFromUtf32(v);
             }
-        }
-
-        public static string ConvertBool(bool b)
-        {
-            return (b ? On : Off);
         }
     }
 }

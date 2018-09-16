@@ -57,13 +57,13 @@ namespace TetraMinos2
             _rows = rows;
             _columns = columns;
 
-            _datas = Helpers.InitArray(3 * rows, 3 * columns, Constants.Border);
+            _datas = Helpers.InitArrayD2(3 * rows, 3 * columns, Constants.Border);
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
                     this[i, j] = Constants.Empty;
 
-            _n4C = Helpers.InitArray<int>(_rows + 2, _columns + 2);
-            _n4D = Helpers.InitArray<int>(_rows + 2, _columns + 2);
+            _n4C = Helpers.InitArrayD2<int>(_rows + 2, _columns + 2);
+            _n4D = Helpers.InitArrayD2<int>(_rows + 2, _columns + 2);
             for (int i = 0; i < _rows; i++)
                 for (int j = 0; j < _columns; j++)
                 {
@@ -285,28 +285,7 @@ namespace TetraMinos2
             Logger.Info($"Stats: #Solve={_callsSolve} #UpdateBoard={_callsUpdateBoard} #UpdateNeighBoor={_callsUpdateNeighBoor}");
         }
 
-        private static Piece GeneratePiece(int id, List<Position> positions)
-        {
-            int minRow = int.MaxValue;
-            int maxRow = int.MinValue;
-            int minColumn = int.MaxValue;
-            int maxColumn = int.MinValue;
-            foreach (var position in positions)
-            {
-                minRow = Math.Min(minRow, position.Row);
-                maxRow = Math.Max(maxRow, position.Row);
-                minColumn = Math.Min(minColumn, position.Column);
-                maxColumn = Math.Max(maxColumn, position.Column);
-            }
 
-            int rows = maxRow - minRow + 1;
-            int columns = maxColumn - minColumn + 1;
-            byte[] buffer = new byte[rows * columns];
-            foreach (var position in positions)
-                buffer[(position.Row - minRow) * columns + (position.Column - minColumn)] = (byte)Piece.FlagOn;
-
-            return new Piece(id, 1, maxRow - minRow + 1, maxColumn - minColumn + 1, Encoding.ASCII.GetString(buffer));
-        }
 
         // For checking: reload list of pieces from board
         public Dictionary<Piece, int> LoadPiecesFromBoard()
@@ -332,7 +311,7 @@ namespace TetraMinos2
             var pieces = new Dictionary<Piece, int>();
             foreach (var piecePos in piecesPos)                
             {
-                var piece = GeneratePiece(piecePos.Key, piecePos.Value);
+                var piece = Piece.GeneratePiece(piecePos.Key, piecePos.Value);
                 if (pieces.ContainsKey(piece))
                     pieces[piece]++;
                 else

@@ -25,12 +25,20 @@ namespace Common
             return arrayList;
         }
 
-        public static T[,] InitArray<T>(int rows, int columns, T value = default(T))
+        public static T[,] InitArrayD2<T>(int rows, int columns, T value = default(T))
         {
             var datas = new T[rows, columns];
             for (int i = 0; i < datas.GetLength(0); i++)
                 for (int j = 0; j < datas.GetLength(1); j++)
                     datas[i, j] = value;
+            return datas;
+        }
+
+        public static T[] InitArrayD1<T>(int length, T value = default(T))
+        {
+            var datas = new T[length];
+            for (int i = 0; i < datas.GetLength(0); i++)
+                    datas[i] = value;
             return datas;
         }
 
@@ -44,6 +52,29 @@ namespace Common
                 sb.AppendLine();
             }
             return sb.ToString();
+        }
+
+        public static string GenerateDatas(List<Position> positions, out int rows, out int columns)
+        {
+            int minRow = int.MaxValue;
+            int maxRow = int.MinValue;
+            int minColumn = int.MaxValue;
+            int maxColumn = int.MinValue;
+            foreach (var position in positions)
+            {
+                minRow = Math.Min(minRow, position.Row);
+                maxRow = Math.Max(maxRow, position.Row);
+                minColumn = Math.Min(minColumn, position.Column);
+                maxColumn = Math.Max(maxColumn, position.Column);
+            }
+
+            rows = maxRow - minRow + 1;
+            columns = maxColumn - minColumn + 1;
+            var buffer = InitArrayD1<byte>(rows * columns, (byte)Constants.FlagOff);
+            foreach (var position in positions)
+                buffer[(position.Row - minRow) * columns + (position.Column - minColumn)] = (byte)Constants.FlagOn;
+
+            return Encoding.ASCII.GetString(buffer);
         }
     }
 }
